@@ -1,117 +1,133 @@
-✅ Descrição do Sistema: Controle de Entradas e Saídas de Vendas
-🎯 Funcionalidade principal:
-Salvar vendas (entradas) e retiradas (saídas) em um banco de dados.
+# 🛒 Sistema de Controle de Entradas e Saídas de Vendas
 
-Exibir total atualizado automaticamente.
+## ✅ Descrição do Sistema
 
-Gerenciar registros diários, semanais e históricos.
+Sistema para controle de vendas (entradas) e retiradas (saídas), com persistência em banco de dados, cálculo automático de totais diários e semanais, e histórico detalhado.
 
-✅ Funcionalidades detalhadas:
-1. Cadastro de Vendas:
-O vendedor seleciona o item vendido.
+## 🎯 Funcionalidade Principal
 
-Insere o valor da venda.
+- Salvar vendas (entradas) e retiradas (saídas) no banco de dados.
+- Exibir total atualizado automaticamente.
+- Gerenciar registros diários, semanais e históricos.
 
-O sistema registra automaticamente a data e o horário da venda.
+---
 
-2. Atualização de Totais:
-A cada nova venda, o valor total do dia aumenta automaticamente.
+## ✅ Funcionalidades Detalhadas
 
-Caso haja uma retirada, o valor é subtraído do total, mantendo o valor sempre atualizado.
+### 📥 Cadastro de Vendas
+- Seleção do item vendido.
+- Inserção do valor da venda.
+- Registro automático de data e horário da venda.
 
-3. Fechamento Diário:
-A cada 24 horas, o sistema:
+### 🔄 Atualização de Totais
+- A cada nova venda, o valor total do dia aumenta automaticamente.
+- Em caso de retirada, o valor é subtraído, mantendo o total sempre atualizado.
 
-Fecha os dados do dia.
+### 📅 Fechamento Diário
+- A cada 24 horas:
+  - Fecha os dados do dia.
+  - Salva o total com o formato:  
+    **→ Data: DD/MM/AAAA | Valor total: R$ XXXX**
+  - Reinicia o controle para o próximo dia útil.
 
-Salva o total com o seguinte formato:
-→ Data: 21/05/2025 | Valor total: R$ 800,00
+### 📊 Histórico e Visualização
+- Acesso aos registros de dias anteriores.
+- Ao selecionar uma data, exibe:
+  - Todas as vendas realizadas.
+  - Todas as retiradas feitas.
 
-Reinicia o controle com um novo total em branco no próximo dia útil.
+### 📆 Fechamento Semanal
+- Após 7 dias, permite:
+  - Fechar as vendas da semana.
+  - Exibir o total obtido na semana.
 
-4. Histórico e Visualização:
-O usuário pode acessar os registros de dias anteriores.
+---
 
-Ao clicar sobre uma data, o sistema exibe:
+## ✅ Requisitos Técnicos
 
-Todas as vendas realizadas naquele dia.
+### 🗄️ Banco de Dados: Estrutura Sugerida
+- **vendas**:  
+  `id`, `item`, `valor`, `data_hora`, `tipo` (`entrada`/`retirada`)
 
-Todas as retiradas feitas naquele dia.
+- **fechamentos_diarios**:  
+  `id`, `data`, `total`
 
-5. Fechamento Semanal:
-Após 7 dias, o sistema permite ao vendedor:
+- **fechamentos_semanais**:  
+  `id`, `semana`, `total`
 
-Fechar as vendas da semana.
+### ⚙️ Tecnologias Utilizadas
+- **Backend**: JavaScript (Node.js + Express)
+- **Banco de Dados**: MySQL ou PostgreSQL
+- **Agendador de tarefas**: node-cron (para fechamentos automáticos)
+- **Frontend**: HTML + TailwindCSS + JavaScript  
+  *(Sugestão: evoluir para React.js ou Vue.js)*
 
-Exibir o valor total obtido ao longo da semana.
+---
 
-✅ Requisitos Técnicos:
-🗄️ Banco de Dados:
-Tabelas sugeridas:
+## ✅ Fluxo Geral do Sistema
 
-vendas (id, item, valor, data_hora, tipo [entrada/retirada])
+1. **Venda registrada** → valor somado ao total do dia.
+2. **Retirada registrada** → valor subtraído do total do dia.
+3. **Após 24h** → total do dia salvo e reiniciado.
+4. **Após 7 dias** → somatório da semana salvo.
+5. **Usuário** → consulta histórico de qualquer dia/semana com detalhamento.
 
-fechamentos_diarios (id, data, total)
+---
 
-fechamentos_semanais (id, semana, total)
+## ✅ Estrutura Geral do Projeto
 
-✅ Fluxo geral:
-Venda registrada → valor somado ao total do dia.
+### 🖥️ Página Principal
+- **Total do dia**: R$ XXXX
+- **Formulário**:  
+  [Selecionar item] + [Valor] + [Entrada/Saída] → [Salvar]
+- **Lista**:  
+  Últimas vendas do dia
 
-Retirada registrada → valor subtraído do total do dia.
+### 🗓️ Histórico
+- **Lista**:
+  - Data: 21/05/2025 → Total: R$ 800,00 → [Ver detalhes]
+  - Data: 20/05/2025 → Total: R$ 650,00 → [Ver detalhes]
+- **Detalhes**:  
+  Lista completa das vendas/saídas daquele dia.
 
-Após 24h → total do dia é salvo e reiniciado.
+### 📑 Fechamento Semanal
+- [Fechar semana] → Exibe:  
+  Semana X → Total: R$ XXXX
 
-Após 7 dias → somatório da semana salvo.
+---
 
-Usuário → pode consultar histórico de qualquer dia/semana, e ver o detalhamento.
+## ✅ Lembretes Importantes
 
-✅ Sugestões de Tecnologias:
-Backend:
-Node.js com Express ou Python Flask/Django.
+- ⏱️ Manter controle rigoroso de datas e horários (fuso horário).
+- ✅ Validar entradas: valores positivos e campos obrigatórios.
+- 🔒 Implementar autenticação para vendedores.
 
-Agendador de tarefas: Node-cron ou Celery para fechamentos automáticos.
+---
 
-Frontend:
-React.js ou Vue.js.
+## 🚀 Como Contribuir
+1. Fork este repositório.
+2. Crie sua branch: `git checkout -b feature/sua-feature`
+3. Commit suas alterações: `git commit -m 'feat: sua feature'`
+4. Push para a branch: `git push origin feature/sua-feature`
+5. Abra um Pull Request.
 
-Interface com:
+---
 
-Formulário para inserir vendas/retiradas.
+## 📄 Licença
+Este projeto está licenciado sob a [sua licença preferida].
 
-Tabela com valores diários.
+---
 
-Botões de visualização de históricos.
+## ✅ Instruções de Instalação e Execução
 
-Banco de Dados:
-MySQL, PostgreSQL ou SQLite (para sistemas menores).
+### 🔧 Pré-requisitos
+- Node.js
+- MySQL ou PostgreSQL
+- npm ou yarn
 
-✅ Exemplo de interface:
-Página principal:
+### 🚀 Instalação
 
-Total do dia: R$ XXXX
-
-Formulário: [Selecionar item] + [Valor] + [Entrada/Saída] → [Salvar]
-
-Lista: Últimas vendas do dia.
-
-Histórico:
-
-Lista:
-
-Data: 21/05/2025 → Total: R$ 800,00 → [Ver detalhes]
-
-Data: 20/05/2025 → Total: R$ 650,00 → [Ver detalhes]
-
-Detalhes: Lista completa das vendas/saídas daquele dia.
-
-Fechamento semanal:
-
-[Fechar semana] → Exibe: Semana X → Total: R$ XXXX
-
-✅ Lembretes importantes:
-Manter controle rigoroso de datas/hora (fuso horário).
-
-Validar entradas: valores positivos, campos obrigatórios.
-
-Segurança: autenticação para o vendedor.
+```bash
+git clone https://github.com/seu-usuario/seu-repositorio.git
+cd seu-repositorio
+npm install
