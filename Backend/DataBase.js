@@ -15,6 +15,15 @@ db.serialize(() => {
         data TEXT NOT NULL
     )
   `);
+
+  // Nova tabela para fechamentos diários
+  db.run(`
+    CREATE TABLE IF NOT EXISTS fechamentos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        data TEXT NOT NULL UNIQUE,
+        total REAL NOT NULL
+    )
+  `);
 });
 
 module.exports = db;

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { inserirVenda, listarVendasPorData } = require('./script');
+const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos } = require('./script');
 
 const app = express();
 app.use(cors());
@@ -20,6 +20,23 @@ app.post('/api/vendas', (req, res) => {
 app.get('/api/vendas', (req, res) => {
     const { data } = req.query;
     listarVendasPorData(data, (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// ROTA PARA INSERIR FECHAMENTO
+app.post('/api/fechamentos', (req, res) => {
+    const { data, total } = req.body;
+    inserirFechamento(data, total, (err, id) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ id });
+    });
+});
+
+// ROTA PARA LISTAR FECHAMENTOS
+app.get('/api/fechamentos', (req, res) => {
+    listarFechamentos((err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });

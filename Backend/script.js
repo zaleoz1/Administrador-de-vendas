@@ -21,4 +21,31 @@ function listarVendasPorData(data, callback) {
   );
 }
 
-module.exports = { inserirVenda, listarVendasPorData };
+// Inserir fechamento diário
+function inserirFechamento(data, total, callback) {
+  db.run(
+    'INSERT OR REPLACE INTO fechamentos (data, total) VALUES (?, ?)',
+    [data, total],
+    function (err) {
+      callback(err, this?.lastID);
+    }
+  );
+}
+
+// Listar fechamentos
+function listarFechamentos(callback) {
+  db.all(
+    'SELECT * FROM fechamentos ORDER BY data DESC',
+    [],
+    (err, rows) => {
+      callback(err, rows);
+    }
+  );
+}
+
+module.exports = {
+  inserirVenda,
+  listarVendasPorData,
+  inserirFechamento,
+  listarFechamentos,
+};
