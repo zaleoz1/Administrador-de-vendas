@@ -1,25 +1,23 @@
 {
-  "name": "administrador-de-vendas",
+  "name": "vendas-do-ialdao",
   "version": "1.0.0",
-  "description": "Sistema para controle de vendas (entradas) e retiradas (saídas), com persistência em banco de dados, cálculo automático de totais diários e semanais, e histórico detalhado.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zaleoz1/Administrador-de-vendas.git"
+    "start": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/zaleoz1/Administrador-de-vendas/issues"
-  },
-  "homepage": "https://github.com/zaleoz1/Administrador-de-vendas#readme",
+  "description": "",
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
   }
 }
