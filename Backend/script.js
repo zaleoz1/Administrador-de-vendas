@@ -1,5 +1,4 @@
 const db = require('./DataBase');
-
 // Exemplo: inserir uma venda
 function inserirVenda(item, valor, tipo, data, callback) {
   db.run(

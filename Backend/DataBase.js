@@ -12,7 +12,6 @@ db.serialize(() => {
         item TEXT NOT NULL,
         valor REAL NOT NULL,
         tipo TEXT NOT NULL,
-        pagamento TEXT NOT NULL, -- NOVO
         data TEXT NOT NULL
     )
   `);
