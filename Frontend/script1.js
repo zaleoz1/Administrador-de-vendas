@@ -69,3 +69,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Modal de Histórico
+document.addEventListener('DOMContentLoaded', function() {
+    // Botão do header (desktop)
+    const btnHistoricoDesktop = document.querySelector('.sm\\:flex button.bg-blue-500');
+    // Botão do menu mobile
+    const btnHistoricoMobile = document.querySelector('#mobile-menu button.bg-blue-500');
+    const modal = document.getElementById('modal-historico');
+    const fecharModal = document.getElementById('fechar-modal-historico');
+
+    function abrirModal() {
+        modal.classList.remove('hidden');
+    }
+    function fechar() {
+        modal.classList.add('hidden');
+    }
+
+    if (btnHistoricoDesktop) btnHistoricoDesktop.addEventListener('click', abrirModal);
+    if (btnHistoricoMobile) btnHistoricoMobile.addEventListener('click', abrirModal);
+    if (fecharModal) fecharModal.addEventListener('click', fechar);
+
+    // Fecha ao clicar fora do conteúdo
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) fechar();
+        });
+    }
+});
