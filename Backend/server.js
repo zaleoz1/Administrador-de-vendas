@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos } = require('./script');
+const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico } = require('./script');
 
 const app = express();
 app.use(cors());
@@ -26,17 +26,40 @@ app.get('/api/vendas', (req, res) => {
 });
 
 // ROTA PARA INSERIR FECHAMENTO
-app.post('/api/fechamentos', (req, res) => {
+app.post('/api/fechamentos', async (req, res) => {
     const { data, total } = req.body;
-    inserirFechamento(data, total, (err, id) => {
+    copiarVendasParaHistorico(data, (err) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ id });
+        inserirFechamento(data, total, (err, id) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ id });
+        });
     });
 });
 
 // ROTA PARA LISTAR FECHAMENTOS
 app.get('/api/fechamentos', (req, res) => {
     listarFechamentos((err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// ROTA PARA APAGAR VENDAS DO DIA
+app.delete('/api/vendas', (req, res) => {
+    const { data } = req.query;
+    console.log('Data recebida para apagar:', data); // <-- Adicione isso
+    const db = require('./DataBase');
+    db.run('DELETE FROM vendas WHERE data = ?', [data], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ deleted: this.changes });
+    });
+});
+
+app.get('/api/historico-vendas', (req, res) => {
+    const { data } = req.query;
+    const db = require('./DataBase');
+    db.all('SELECT * FROM historico_vendas WHERE data = ?', [data], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });

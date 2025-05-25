@@ -49,6 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json());
     }
 
+    function buscarVendasHistoricoPorData(data) {
+        return fetch(`http://localhost:3001/api/historico-vendas?data=${data}`)
+            .then(res => res.json());
+    }
+
     async function atualizarHistoricoDiario() {
         const ul = document.getElementById('historico-diario');
         if (!ul) return;
@@ -68,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ul.querySelectorAll('button[data-data]').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const data = btn.getAttribute('data-data');
-                const vendas = await buscarVendasPorData(data);
+                const vendas = await buscarVendasHistoricoPorData(data);
                 mostrarDetalhesHistorico(data, vendas);
             });
         });
@@ -137,8 +142,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data, total })
             });
+
+            // Apaga as vendas do dia no banco
+            await fetch(`http://localhost:3001/api/vendas?data=${data}`, {
+                method: 'DELETE'
+            });
+
             alert('Caixa do dia fechado e salvo no histórico!');
             atualizarHistoricoDiario();
+
+            // Limpa a lista de vendas do dia
+            if (lista) {
+                lista.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-vendas">Nenhum registro hoje.</li>';
+            }
+            // Atualiza o total do dia
+            if (totalDia) {
+                totalDia.textContent = 'R$ 0,00';
+            }
         });
     }
 

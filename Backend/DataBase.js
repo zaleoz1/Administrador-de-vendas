@@ -24,6 +24,16 @@ db.serialize(() => {
         total REAL NOT NULL
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS historico_vendas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item TEXT NOT NULL,
+        valor REAL NOT NULL,
+        tipo TEXT NOT NULL,
+        data TEXT NOT NULL
+    )
+  `);
 });
 
 module.exports = db;
