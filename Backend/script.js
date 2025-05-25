@@ -24,8 +24,7 @@ function listarVendasPorData(data, callback) {
 // Inserir fechamento diário
 function inserirFechamento(data, total, callback) {
   db.run(
-    `INSERT INTO fechamentos (data, total) VALUES (?, ?)
-     ON CONFLICT(data) DO UPDATE SET total = total + excluded.total`,
+    `INSERT INTO fechamentos (data, total) VALUES (?, ?)`,
     [data, total],
     function (err) {
       callback(err, this?.lastID);

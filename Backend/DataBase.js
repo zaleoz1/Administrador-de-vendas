@@ -20,7 +20,7 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS fechamentos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        data TEXT NOT NULL UNIQUE,
+        data TEXT NOT NULL,
         total REAL NOT NULL
     )
   `);
