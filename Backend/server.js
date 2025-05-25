@@ -27,12 +27,20 @@ app.get('/api/vendas', (req, res) => {
 
 // ROTA PARA INSERIR FECHAMENTO
 app.post('/api/fechamentos', async (req, res) => {
-    const { data, total } = req.body;
-    copiarVendasParaHistorico(data, (err) => {
+    const { data } = req.body;
+    const db = require('./DataBase');
+    db.all('SELECT * FROM vendas WHERE data = ?', [data], (err, vendas) => {
         if (err) return res.status(500).json({ error: err.message });
-        inserirFechamento(data, total, (err, id) => {
+        let total = 0;
+        vendas.forEach(venda => {
+            total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+        });
+        copiarVendasParaHistorico(data, (err) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json({ id });
+            inserirFechamento(data, total, (err, id) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ id });
+            });
         });
     });
 });

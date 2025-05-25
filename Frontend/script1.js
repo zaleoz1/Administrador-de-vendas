@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function carregarVendas() {
+        if (!lista) return; // Adicione esta linha para evitar erro se o elemento não existir
         fetch(`http://localhost:3001/api/vendas?data=${dataHoje()}`)
             .then(res => res.json())
             .then(vendas => {
@@ -183,5 +184,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adicione esta linha para carregar o histórico ao abrir o historic.html
     if (document.getElementById('historico-diario')) {
         atualizarHistoricoDiario();
+    }
+
+    const formFiltro = document.getElementById('form-filtro-data');
+    const inputFiltro = document.getElementById('filtro-data');
+    const btnLimparFiltro = document.getElementById('limpar-filtro');
+
+    if (formFiltro && inputFiltro) {
+        formFiltro.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = inputFiltro.value;
+            const ul = document.getElementById('historico-diario');
+            ul.innerHTML = '';
+            if (!data) {
+                await atualizarHistoricoDiario();
+                return;
+            }
+            // Busca fechamentos apenas para a data selecionada
+            const fechamentos = await fetch('http://localhost:3001/api/fechamentos').then(r => r.json());
+            const fechamento = fechamentos.find(f => f.data === data);
+            if (!fechamento) {
+                ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico">Nenhum registro encontrado.</li>';
+                return;
+            }
+            const dataFormatada = fechamento.data.split('-').reverse().join('/');
+            ul.innerHTML = `
+                <li class="flex justify-between items-center py-2">
+                    <span>${dataFormatada}</span>
+                    <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                    <button class="text-blue-500 underline hover:font-bold" data-data="${fechamento.data}">Ver detalhes</button>
+                </li>
+            `;
+            // Reaplica evento do botão "Ver detalhes"
+            ul.querySelectorAll('button[data-data]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const data = btn.getAttribute('data-data');
+                    const vendas = await buscarVendasHistoricoPorData(data);
+                    mostrarDetalhesHistorico(data, vendas);
+                });
+            });
+        });
+    }
+
+    if (btnLimparFiltro) {
+        btnLimparFiltro.addEventListener('click', async () => {
+            inputFiltro.value = '';
+            await atualizarHistoricoDiario();
+        });
+    }
+
+    // --- MENU HAMBURGUER MOBILE ---
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
     }
 });
