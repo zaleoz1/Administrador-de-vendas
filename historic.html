@@ -12,12 +12,49 @@
         body {
             font-family: 'Roboto', Arial, sans-serif;
         }
+        /* Ajuste para ocupar toda a tela */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #conteudo-modal-historico {
+            width: 100%;
+        }
+        /* Responsividade extra para mobile */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+            }
+            main {
+                padding: 0.5rem !important;
+            }
+            section {
+                padding: 0.75rem !important;
+            }
+            #conteudo-modal-historico {
+                padding: 0 !important;
+            }
+        }
+        /* Ajuste para desktop */
+        @media (min-width: 641px) {
+            .container {
+                max-width: 900px;
+                width: 100%;
+            }
+            main {
+                padding: 2rem 0 !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen w-full">
     <!-- Header copiado do index.html -->
-    <header class="bg-white shadow mb-6">
-        <div class="container mx-auto flex flex-row items-center justify-between p-4">
+    <header class="bg-white shadow mb-6 w-full">
+        <div class="container mx-auto flex flex-row items-center justify-between p-4 w-full">
             <!-- Logo e título à esquerda -->
             <div class="flex flex-row items-center gap-3">
                 <img src="../img/1.png" alt="Logo" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500 shadow-sm transition hover:scale-105">
@@ -43,17 +80,40 @@
     </header>
     <!-- Fim Header -->
 
-    <main class="container mx-auto p-4">
-        <h2 class="text-xl font-bold mb-4">Histórico de Vendas</h2>
+    <main class="container mx-auto p-4 w-full">
+        <div class="mb-8">
+            <div class="bg-white rounded shadow p-4 text-center">
+                <span class="text-lg font-bold">Histórico de Vendas</span>
+            </div>
+        </div>
         <div id="conteudo-modal-historico">
             <!-- Histórico diário -->
             <section class="bg-white rounded shadow p-4 mb-4">
-                <h2 class="text-lg font-bold mb-2">Histórico Diário</h2>
-                <ul id="historico-diario" class="divide-y">
-                  <!-- Itens serão inseridos via JS -->
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-lg font-bold">Histórico Diário</h2>
+                    <button id="fechar-historico" class="text-white px-4 py-2 rounded font-bold hover:text-green-600 transition text-green-500 underline">
+                        Fechar histórico
+                    </button>
+                </div>
+                <ul id="historico-diario" class="divide-y h-96 overflow-y-auto">
+                    <!-- Itens serão inseridos via JS -->
+                    <li class="text-gray-400 text-center py-2" id="sem-historico">Nenhum registro encontrado.</li>
                 </ul>
             </section>
             <!-- Fim Histórico diário -->
+
+            <!-- Fechamento semanal -->
+            <section class="bg-white rounded shadow p-4 mb-4">
+                <h2 class="text-lg font-bold mb-2">Fechamento Semanal</h2>
+                <button class="bg-blue-500 text-white px-5 py-2 rounded font-bold hover:bg-blue-600 transition mb-2">Fechar semana</button>
+                <div id="fechamento-semanal" class="mt-2">
+                    <div class="flex justify-between items-center py-2">
+                        <span>Semana 21/05 - 27/05</span>
+                        <span class="font-bold text-blue-500">R$ 3.500,00</span>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Fechamento semanal -->
         </div>
     </main>
 </body>
