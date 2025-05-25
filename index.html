@@ -29,7 +29,7 @@
             </button>
             <!-- Botões (desktop) -->
             <div class="hidden sm:flex gap-3">
-                <button class="bg-blue-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-blue-600 hover:scale-105 transition">Histórico</button>
+                <button class="bg-blue-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-blue-600 hover:scale-105 transition" onclick="window.location.href='historic.html'">Histórico</button>
                 <button class="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-200 hover:scale-105 transition">Outro</button>
             </div>
         </div>
@@ -105,21 +105,6 @@
             </div>
         </section>
         <!-- Fim Fechamento semanal -->
-
-        <!-- Modal de Histórico -->
-<div id="modal-historico" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full p-8 relative">
-    <button id="fechar-modal-historico" class="absolute top-4 right-4 text-gray-600 hover:text-red-500 text-2xl font-bold">&times;</button>
-    <h2 class="text-xl font-bold mb-4">Histórico de Vendas</h2>
-    <div id="conteudo-modal-historico">
-      <!-- Histórico diário -->
-      <section class="bg-white rounded shadow p-4 mb-4">
-        <h2 class="text-lg font-bold mb-2">Histórico Diário</h2>
-        <ul id="historico-diario" class="divide-y">
-          <!-- Itens serão inseridos via JS -->
-        </ul>
-      </section>
-      <!-- Fim Histórico diário -->
     </div>
   </div>
 </div>

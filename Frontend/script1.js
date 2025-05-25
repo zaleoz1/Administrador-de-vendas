@@ -179,4 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carregar vendas do dia ao iniciar
     carregarVendas();
+
+    // Adicione esta linha para carregar o histórico ao abrir o historic.html
+    if (document.getElementById('historico-diario')) {
+        atualizarHistoricoDiario();
+    }
 });
