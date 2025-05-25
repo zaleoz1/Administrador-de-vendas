@@ -44,13 +44,26 @@ function listarFechamentos(callback) {
 }
 
 function copiarVendasParaHistorico(data, callback) {
-  // Apenas insere, sem apagar o que já existe
-  db.run(
-    `INSERT INTO historico_vendas (item, valor, tipo, data)
-     SELECT item, valor, tipo, data FROM vendas WHERE data = ?`,
+  const db = require('./DataBase');
+  // Seleciona vendas do dia que ainda não estão no histórico
+  db.all(
+    `SELECT v.* FROM vendas v
+         LEFT JOIN historico_vendas h
+         ON v.item = h.item AND v.valor = h.valor AND v.tipo = h.tipo AND v.data = h.data
+         WHERE v.data = ? AND h.rowid IS NULL`,
     [data],
-    function (err) {
-      callback(err, this?.changes);
+    (err, vendasNovas) => {
+      if (err) return callback(err);
+      if (!vendasNovas.length) return callback(null, 0); // Nada novo para copiar
+
+      // Insere cada venda nova no histórico
+      const insert = db.prepare(
+        'INSERT INTO historico_vendas (item, valor, tipo, data) VALUES (?, ?, ?, ?)'
+      );
+      vendasNovas.forEach((venda) => {
+        insert.run([venda.item, venda.valor, venda.tipo, venda.data]);
+      });
+      insert.finalize((err) => callback(err, vendasNovas.length));
     }
   );
 }

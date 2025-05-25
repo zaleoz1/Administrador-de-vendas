@@ -27,19 +27,34 @@ app.get('/api/vendas', (req, res) => {
 
 // ROTA PARA INSERIR FECHAMENTO
 app.post('/api/fechamentos', async (req, res) => {
-    const { data } = req.body;
+    const { data, total } = req.body;
     const db = require('./DataBase');
-    db.all('SELECT * FROM vendas WHERE data = ?', [data], (err, vendas) => {
+    db.get('SELECT * FROM fechamentos WHERE data = ? LIMIT 1', [data], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
-        let total = 0;
-        vendas.forEach(venda => {
-            total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
-        });
-        copiarVendasParaHistorico(data, (err) => {
+
+        db.all('SELECT * FROM vendas WHERE data = ?', [data], (err, vendas) => {
             if (err) return res.status(500).json({ error: err.message });
-            inserirFechamento(data, total, (err, id) => {
+
+            // Copia vendas para o histórico (apenas as que ainda não estão lá)
+            const { copiarVendasParaHistorico } = require('./script');
+            copiarVendasParaHistorico(data, (err) => {
                 if (err) return res.status(500).json({ error: err.message });
-                res.json({ id });
+
+                if (row) {
+                    // Já existe fechamento: atualiza o total somando
+                    const novoTotal = row.total + total;
+                    db.run('UPDATE fechamentos SET total = ? WHERE data = ?', [novoTotal, data], function (err) {
+                        if (err) return res.status(500).json({ error: err.message });
+                        return res.json({ id: row.id, atualizado: true });
+                    });
+                } else {
+                    // Não existe fechamento: insere normalmente
+                    const { inserirFechamento } = require('./script');
+                    inserirFechamento(data, total, (err, id) => {
+                        if (err) return res.status(500).json({ error: err.message });
+                        res.json({ id, novo: true });
+                    });
+                }
             });
         });
     });

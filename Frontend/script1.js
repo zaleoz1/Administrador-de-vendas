@@ -138,11 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
             vendas.forEach(venda => {
                 total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
             });
-            await fetch('http://localhost:3001/api/fechamentos', {
+            const resp = await fetch('http://localhost:3001/api/fechamentos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data, total })
             });
+            if (!resp.ok) {
+                const erro = await resp.json();
+                alert(erro.error || 'Erro ao fechar o caixa.');
+                return;
+            }
 
             // Apaga as vendas do dia no banco
             await fetch(`http://localhost:3001/api/vendas?data=${data}`, {
