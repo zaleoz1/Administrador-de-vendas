@@ -10,10 +10,10 @@
     <script src="Frontend/script1.js" defer></script>
      
 </head>
-<body class="bg-gray-100 min-h-screen w-full">
+<body class="bg-blue-500 min-h-screen w-full">
     <!-- Header copiado do index.html -->
-    <header class="bg-white shadow  w-full">
-        <div class="container mx-auto flex flex-row items-center justify-between p-4 w-full">
+    <header class="bg-white shadow w-full">
+        <div class="w-full px-2 sm:px-4 flex flex-row items-center justify-between p-2 sm:p-4">
             <!-- Logo e título à esquerda -->
             <div class="flex flex-row items-center gap-3">
                 <img src="../img/1.png" alt="Logo" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500 shadow-sm transition hover:scale-105">
@@ -39,14 +39,14 @@
     </header>
     <!-- Fim Header -->
 
-    <main class="container mx-auto p-4 w-full">
+    <main class="w-full px-2 sm:px-4 py-2 sm:py-4">
         <div class="mb-4">
-            <div class="bg-white rounded shadow p-4 text-center">
+            <div class="bg-white rounded shadow p-2 sm:p-4 text-center">
                
                 <!-- Filtro por data -->
                 <form id="form-filtro-data" class="flex flex-row items-center justify-center gap-1 sm:gap-3 mt-2">
                     <div class="flex-1 flex justify-start">
-                        <input type="date" id="filtro-data" class="border rounded px-4 py-2 text-base w-full max-w-xs sm:px-3 sm:py-2 sm:text-base" />
+                        <input type="date" id="filtro-data" class="border rounded px-4 py-2 text-base w-full max-w-xs sm:px-2 sm:py-2 sm:text-base" />
                     </div>
                     <div class="flex gap-1 sm:gap-3">
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 text-base sm:px-3 sm:py-2 sm:text-base rounded font-bold hover:bg-blue-600 transition">Filtrar</button>
@@ -57,14 +57,11 @@
         </div>
         <div id="conteudo-modal-historico">
             <!-- Histórico diário -->
-            <section class="bg-white rounded shadow p-4 mb-4">
-                <div class="flex items-center justify-between mb-2">
+            <section class="bg-white rounded shadow p-2 sm:p-4 mb-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between mb-2 gap-2">
                     <h2 class="text-lg font-bold">Histórico Diário</h2>
-                    <button id="fechar-historico" class="text-white px-4 py-2 rounded font-bold hover:text-green-600 transition text-green-500 underline">
-                        Fechar histórico
-                    </button>
                 </div>
-                <ul id="historico-diario" class="divide-y h-96 overflow-y-auto">
+                <ul id="historico-diario" class="divide-y max-h-[70vh] overflow-y-auto">
                     <!-- Itens serão inseridos via JS -->
                     <li class="text-gray-400 text-center py-2" id="sem-historico">Nenhum registro encontrado.</li>
                 </ul>
@@ -72,11 +69,11 @@
             <!-- Fim Histórico diário -->
 
             <!-- Fechamento semanal -->
-            <section class="bg-white rounded shadow p-4 mb-4">
+            <section class="bg-white rounded shadow p-2 sm:p-4 mb-4">
                 <h2 class="text-lg font-bold mb-2">Fechamento Semanal</h2>
-                <button class="bg-blue-500 text-white px-5 py-2 rounded font-bold hover:bg-blue-600 transition mb-2">Fechar semana</button>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded font-bold hover:bg-blue-600 transition mb-2">Fechar semana</button>
                 <div id="fechamento-semanal" class="mt-2">
-                    <div class="flex justify-between items-center py-2">
+                    <div class="flex flex-col sm:flex-row justify-between items-center py-2 gap-2">
                         <span>Semana 21/05 - 27/05</span>
                         <span class="font-bold text-blue-500">R$ 3.500,00</span>
                     </div>
@@ -84,9 +81,9 @@
             </section>
             <!-- Fim Fechamento semanal -->
 
-            <!-- Adicione dentro de conteudo-modal-historico, será preenchido via JS -->
+            <!-- Modal responsivo -->
             <div id="modal-detalhes-historico" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-                <div class="bg-white rounded shadow-lg p-6 w-full max-w-md relative">
+                <div class="bg-white rounded shadow-lg p-2 sm:p-6 w-full max-w-full sm:max-w-md mx-2 relative">
                     <div id="detalhes-historico-conteudo"></div>
                 </div>
             </div>
