@@ -19,10 +19,19 @@ app.post('/api/vendas', (req, res) => {
 // Rota para listar vendas do dia
 app.get('/api/vendas', (req, res) => {
     const { data } = req.query;
-    listarVendasPorData(data, (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows);
-    });
+    if (!data) {
+        // Retorna todas as vendas se data não for fornecida
+        const db = require('./DataBase');
+        db.all('SELECT * FROM vendas', [], (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json(rows);
+        });
+    } else {
+        listarVendasPorData(data, (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json(rows);
+        });
+    }
 });
 
 // ROTA PARA INSERIR FECHAMENTO
@@ -82,10 +91,17 @@ app.delete('/api/vendas', (req, res) => {
 app.get('/api/historico-vendas', (req, res) => {
     const { data } = req.query;
     const db = require('./DataBase');
-    db.all('SELECT * FROM historico_vendas WHERE data = ?', [data], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows);
-    });
+    if (data) {
+        db.all('SELECT * FROM historico_vendas WHERE data = ?', [data], (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json(rows);
+        });
+    } else {
+        db.all('SELECT * FROM historico_vendas', [], (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json(rows);
+        });
+    }
 });
 
 const PORT = 3001;

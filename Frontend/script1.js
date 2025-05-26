@@ -173,7 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Limpa a lista de vendas do dia
             if (lista) {
-                lista.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-vendas">Nenhum registro hoje.</li>';
+                // Aqui você pode limpar manualmente ou recarregar:
+                carregarVendas();
             }
             // Atualiza o total do dia
             if (totalDia) {
@@ -260,5 +261,47 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
+    }
+
+    // Função para carregar todas as vendas e calcular totais
+    async function carregarTabelaAjuste() {
+        const tabela = document.getElementById('tabela-vendas-ajuste');
+        const tbody = tabela?.querySelector('tbody');
+        const subtotalSpan = document.getElementById('subtotal-ajuste');
+        const retiradoSpan = document.getElementById('retirado-ajuste');
+        const totalSpan = document.getElementById('total-ajuste');
+        if (!tbody) return;
+
+        // Busca todas as vendas do histórico
+        const vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+
+        tbody.innerHTML = '';
+        let subtotal = 0;
+        let retirado = 0;
+        vendas.forEach(venda => {
+            const sinal = venda.tipo === 'retirada' ? '-' : '+';
+            const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
+            tbody.innerHTML += `
+                <tr>
+                    <td class="px-4 py-2">${venda.item}</td>
+                    <td class="px-4 py-2">${venda.tipo}</td>
+                    <td class="px-4 py-2 font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td class="px-4 py-2">${venda.data.split('-').reverse().join('/')}</td>
+                </tr>
+            `;
+            if (venda.tipo === 'retirada') {
+                retirado += parseFloat(venda.valor);
+            } else {
+                subtotal += parseFloat(venda.valor);
+            }
+        });
+        subtotalSpan.textContent = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        retiradoSpan.textContent = retirado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        totalSpan.textContent = (subtotal - retirado).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Só executa se estiver na página de ajuste
+    if (document.getElementById('tabela-vendas-ajuste')) {
+        carregarTabelaAjuste();
     }
 });
