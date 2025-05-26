@@ -68,10 +68,32 @@ function copiarVendasParaHistorico(data, callback) {
   );
 }
 
+function inserirFechamentoSemanal(dataInicio, dataFim, total, callback) {
+  db.run(
+    'INSERT INTO historico_semanal (data_inicio, data_fim, total) VALUES (?, ?, ?)',
+    [dataInicio, dataFim, total],
+    function (err) {
+      callback(err, this?.lastID);
+    }
+  );
+}
+
+function listarFechamentosSemanais(callback) {
+  db.all(
+    'SELECT * FROM historico_semanal ORDER BY data_inicio DESC',
+    [],
+    (err, rows) => {
+      callback(err, rows);
+    }
+  );
+}
+
 module.exports = {
   inserirVenda,
   listarVendasPorData,
   inserirFechamento,
   listarFechamentos,
   copiarVendasParaHistorico, // adicione aqui
+  inserirFechamentoSemanal,
+  listarFechamentosSemanais,
 };

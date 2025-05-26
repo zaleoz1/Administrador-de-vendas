@@ -26,12 +26,11 @@ db.serialize(() => {
   `);
 
   db.run(`
-    CREATE TABLE IF NOT EXISTS historico_vendas (
+    CREATE TABLE IF NOT EXISTS historico_semanal (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item TEXT NOT NULL,
-        valor REAL NOT NULL,
-        tipo TEXT NOT NULL,
-        data TEXT NOT NULL
+        data_inicio TEXT NOT NULL,
+        data_fim TEXT NOT NULL,
+        total REAL NOT NULL
     )
   `);
 });

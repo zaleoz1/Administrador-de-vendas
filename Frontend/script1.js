@@ -334,4 +334,135 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('tabela-vendas-ajuste')) {
         carregarTabelaAjuste();
     }
+
+    // Função para finalizar ajuste semanal
+    async function finalizarAjuste() {
+        // Busca todas as vendas filtradas (já está implementado em carregarTabelaAjuste)
+        let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+        if (!vendas.length) {
+            alert('Nenhum dado para salvar no ajuste.');
+            return;
+        }
+
+        // Ordena por data
+        vendas.sort((a, b) => a.data.localeCompare(b.data));
+        const dataInicio = vendas[0].data;
+        const dataFim = vendas[vendas.length - 1].data;
+
+        // Calcula total
+        let total = 0;
+        vendas.forEach(venda => {
+            total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+        });
+
+        // Envia para o backend (crie uma rota /api/fechamento-semanal)
+        const resp = await fetch('http://localhost:3001/api/fechamento-semanal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                dataInicio,
+                dataFim,
+                total
+            })
+        });
+
+        if (resp.ok) {
+            alert('Ajuste semanal salvo no histórico!');
+            // Opcional: Limpar tabela ou atualizar tela
+        } else {
+            alert('Erro ao salvar ajuste semanal.');
+        }
+    }
+
+    // Evento do botão
+    const btnFinalizarAjuste = document.getElementById('finalizar-ajuste');
+    if (btnFinalizarAjuste) {
+        btnFinalizarAjuste.addEventListener('click', finalizarAjuste);
+    }
+
+    async function atualizarHistoricoSemanal() {
+        const ul = document.getElementById('historico-semanal');
+        if (!ul) return;
+        ul.innerHTML = '';
+        const semanais = await fetch('http://localhost:3001/api/fechamento-semanal').then(r => r.json());
+        if (!semanais.length) {
+            ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico-semanal">Nenhum fechamento semanal encontrado.</li>';
+            return;
+        }
+        semanais.forEach(fechamento => {
+            const dataInicio = fechamento.data_inicio.split('-').reverse().join('/');
+            const dataFim = fechamento.data_fim.split('-').reverse().join('/');
+            ul.innerHTML += `
+                <li class="flex justify-between items-center py-2">
+                    <span>${dataInicio} - ${dataFim}</span>
+                    <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                    <button class="text-blue-500 underline hover:font-bold" 
+                        data-inicio="${fechamento.data_inicio}" 
+                        data-fim="${fechamento.data_fim}">Ver detalhes</button>
+                </li>
+            `;
+        });
+
+        // Evento dos botões "Ver detalhes" do histórico semanal
+        ul.querySelectorAll('button[data-inicio][data-fim]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const dataInicio = btn.getAttribute('data-inicio');
+                const dataFim = btn.getAttribute('data-fim');
+                // Busca vendas do histórico dentro do intervalo da semana
+                let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+                vendas = vendas.filter(v => v.data >= dataInicio && v.data <= dataFim);
+
+                // Calcula subtotal, retirado e total
+                let subtotal = 0;
+                let retirado = 0;
+                vendas.forEach(venda => {
+                    if (venda.tipo === 'retirada') {
+                        retirado += parseFloat(venda.valor);
+                    } else {
+                        subtotal += parseFloat(venda.valor);
+                    }
+                });
+                const total = subtotal - retirado;
+
+                // Monta o HTML do modal
+                const modal = document.getElementById('modal-detalhes-historico');
+                const conteudo = document.getElementById('detalhes-historico-conteudo');
+                if (conteudo && modal) {
+                    conteudo.innerHTML = `
+                        <h3 class="text-lg font-bold mb-2">Detalhes da semana<br>${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}</h3>
+                        <ul class="divide-y mb-4 max-h-60 overflow-y-auto">
+                            ${vendas.map(venda => `
+                                <li class="flex justify-between items-center py-2">
+                                    <span>${venda.item}</span>
+                                    <span class="font-bold ${venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600'}">
+                                        ${venda.tipo === 'retirada' ? '-' : '+'} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                    </span>
+                                    <span class="text-gray-500 text-xs ml-2">${venda.data.split('-').reverse().join('/')}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="flex flex-col gap-2 font-bold mb-2">
+                            <span>Subtotal: <span class="text-green-600">${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></span>
+                            <span>Valor Retirado: <span class="text-red-500">${retirado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></span>
+                            <span>Total: <span class="text-blue-500">${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></span>
+                        </div>
+                        <div class="flex justify-end">
+                            <button id="btn-voltar-modal-interno" class="bg-gray-200 text-gray-700 px-3 py-1 rounded font-bold hover:bg-gray-300 transition ml-4">Voltar</button>
+                        </div>
+                    `;
+                    modal.classList.remove('hidden');
+                    // Evento do botão voltar interno
+                    const btnVoltarInterno = document.getElementById('btn-voltar-modal-interno');
+                    if (btnVoltarInterno) {
+                        btnVoltarInterno.onclick = () => modal.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    }
+
+    // Chame essa função ao carregar a historic.html
+    if (document.getElementById('historico-semanal')) {
+        atualizarHistoricoSemanal();
+    }
 });

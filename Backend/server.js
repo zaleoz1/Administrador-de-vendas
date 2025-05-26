@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico } = require('./script');
+const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico, inserirFechamentoSemanal, listarFechamentosSemanais } = require('./script');
 
 const app = express();
 app.use(cors());
@@ -102,6 +102,23 @@ app.get('/api/historico-vendas', (req, res) => {
             res.json(rows);
         });
     }
+});
+
+// Rota para inserir fechamento semanal
+app.post('/api/fechamento-semanal', (req, res) => {
+    const { dataInicio, dataFim, total } = req.body;
+    inserirFechamentoSemanal(dataInicio, dataFim, total, (err, id) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ id });
+    });
+});
+
+// Rota para listar fechamentos semanais
+app.get('/api/fechamento-semanal', (req, res) => {
+    listarFechamentosSemanais((err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
 });
 
 const PORT = 3001;
