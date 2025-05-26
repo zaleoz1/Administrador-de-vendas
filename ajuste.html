@@ -39,6 +39,27 @@
 
     <main class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow p-6 h-[500px] flex flex-col">
         <h2 class="text-xl font-bold mb-4 text-blue-700">Todas as Vendas</h2>
+        <!-- Formulário de filtro -->
+        <form id="form-filtro-ajuste" class="flex flex-wrap gap-2 mb-4 items-end">
+            <div>
+                <label class="block text-sm font-bold mb-1" for="filtro-item">Item</label>
+                <input id="filtro-item" type="text" class="border rounded p-2 w-32" placeholder="Item">
+            </div>
+            <div>
+                <label class="block text-sm font-bold mb-1" for="filtro-tipo">Tipo</label>
+                <select id="filtro-tipo" class="border rounded p-2 w-32">
+                    <option value="">Todos</option>
+                    <option value="entrada">Entrada</option>
+                    <option value="retirada">Retirada</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-bold mb-1" for="filtro-data">Data</label>
+                <input id="filtro-data" type="date" class="border rounded p-2 w-36">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded font-bold hover:bg-blue-600 transition">Filtrar</button>
+            <button type="button" id="limpar-filtro-ajuste" class="bg-gray-200 text-gray-700 px-4 py-2 rounded font-bold hover:bg-gray-300 transition">Limpar</button>
+        </form>
         <div class="overflow-x-auto overflow-y-auto flex-1" style="max-height: 350px;">
             <table class="min-w-full divide-y divide-gray-200 mb-4" id="tabela-vendas-ajuste">
                 <thead>

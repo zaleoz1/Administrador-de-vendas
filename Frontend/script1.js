@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Função para carregar todas as vendas e calcular totais
-    async function carregarTabelaAjuste() {
+    async function carregarTabelaAjuste(filtros = {}) {
         const tabela = document.getElementById('tabela-vendas-ajuste');
         const tbody = tabela?.querySelector('tbody');
         const subtotalSpan = document.getElementById('subtotal-ajuste');
@@ -273,7 +273,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tbody) return;
 
         // Busca todas as vendas do histórico
-        const vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+        let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+
+        // Filtros
+        if (filtros.item) {
+            vendas = vendas.filter(v => v.item.toLowerCase().includes(filtros.item.toLowerCase()));
+        }
+        if (filtros.tipo) {
+            vendas = vendas.filter(v => v.tipo === filtros.tipo);
+        }
+        if (filtros.data) {
+            vendas = vendas.filter(v => v.data === filtros.data);
+        }
 
         tbody.innerHTML = '';
         let subtotal = 0;
@@ -298,6 +309,25 @@ document.addEventListener('DOMContentLoaded', () => {
         subtotalSpan.textContent = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         retiradoSpan.textContent = retirado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         totalSpan.textContent = (subtotal - retirado).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Evento do formulário de filtro
+    const formFiltroAjuste = document.getElementById('form-filtro-ajuste');
+    if (formFiltroAjuste) {
+        formFiltroAjuste.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const item = document.getElementById('filtro-item').value;
+            const tipo = document.getElementById('filtro-tipo').value;
+            const data = document.getElementById('filtro-data').value;
+            carregarTabelaAjuste({ item, tipo, data });
+        });
+        // Botão limpar filtro
+        document.getElementById('limpar-filtro-ajuste').addEventListener('click', function() {
+            document.getElementById('filtro-item').value = '';
+            document.getElementById('filtro-tipo').value = '';
+            document.getElementById('filtro-data').value = '';
+            carregarTabelaAjuste();
+        });
     }
 
     // Só executa se estiver na página de ajuste
