@@ -96,10 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
             total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
         });
         html += `</ul>`;
-        html += `<div class="text-right font-bold">Total: <span class="text-blue-500">${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></div>`;
-        const conteudo = document.getElementById('conteudo-modal-historico');
-        if (conteudo) {
+        html += `
+            <div class="flex justify-between items-center font-bold">
+                <span>Total: <span class="text-blue-500">${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></span>
+                <button id="btn-voltar-modal-interno" class="bg-gray-200 text-gray-700 px-3 py-1 rounded font-bold hover:bg-gray-300 transition ml-4">Voltar</button>
+            </div>
+        `;
+
+        // Mostra no modal
+        const modal = document.getElementById('modal-detalhes-historico');
+        const conteudo = document.getElementById('detalhes-historico-conteudo');
+        if (conteudo && modal) {
             conteudo.innerHTML = html;
+            modal.classList.remove('hidden');
+            // Evento do botão voltar interno
+            const btnVoltarInterno = document.getElementById('btn-voltar-modal-interno');
+            if (btnVoltarInterno) {
+                btnVoltarInterno.onclick = () => modal.classList.add('hidden');
+            }
         }
     }
 
