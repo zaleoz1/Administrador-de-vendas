@@ -105,17 +105,63 @@ app.get('/api/historico-vendas', (req, res) => {
 });
 
 // Rota para inserir fechamento semanal
-app.post('/api/fechamento-semanal', (req, res) => {
+app.post('/api/fechamento-semanal', async (req, res) => {
     const { dataInicio, dataFim, total } = req.body;
-    inserirFechamentoSemanal(dataInicio, dataFim, total, (err, id) => {
+    const db = require('./DataBase');
+    // Remove vendas fechadas do mesmo período para evitar duplicidade
+    db.run('DELETE FROM vendas_fechadas WHERE data_inicio = ? AND data_fim = ?', [dataInicio, dataFim], function (err) {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ id });
+        db.all('SELECT * FROM historico_vendas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, vendas) => {
+            if (err) return res.status(500).json({ error: err.message });
+            const insert = db.prepare('INSERT INTO vendas_fechadas (item, valor, tipo, data, data_inicio, data_fim) VALUES (?, ?, ?, ?, ?, ?)');
+            vendas.forEach(v => {
+                insert.run([v.item, v.valor, v.tipo, v.data, dataInicio, dataFim]);
+            });
+            insert.finalize();
+            const { inserirFechamentoSemanal } = require('./script');
+            inserirFechamentoSemanal(dataInicio, dataFim, total, (err, id) => {
+                if (err) return res.status(500).json({ error: err.message });
+                db.run('DELETE FROM fechamentos', [], function (err) {
+                    if (err) return res.status(500).json({ error: err.message });
+                    db.run('DELETE FROM historico_vendas', [], function (err) {
+                        if (err) return res.status(500).json({ error: err.message });
+                        res.json({ id });
+                    });
+                });
+            });
+        });
     });
 });
 
 // Rota para listar fechamentos semanais
 app.get('/api/fechamento-semanal', (req, res) => {
     listarFechamentosSemanais((err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// ROTA PARA APAGAR VENDAS DO HISTÓRICO POR INTERVALO DE DATAS
+app.delete('/api/historico-vendas', (req, res) => {
+    const { dataInicio, dataFim } = req.query;
+    if (!dataInicio || !dataFim) {
+        return res.status(400).json({ error: 'Intervalo de datas obrigatório.' });
+    }
+    const db = require('./DataBase');
+    db.run(
+        'DELETE FROM historico_vendas WHERE data >= ? AND data <= ?',
+        [dataInicio, dataFim],
+        function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ deleted: this.changes });
+        }
+    );
+});
+
+app.get('/api/vendas-fechadas', (req, res) => {
+    const { dataInicio, dataFim } = req.query;
+    const db = require('./DataBase');
+    db.all('SELECT * FROM vendas_fechadas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });

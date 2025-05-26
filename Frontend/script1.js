@@ -337,25 +337,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para finalizar ajuste semanal
     async function finalizarAjuste() {
-        // Busca todas as vendas filtradas (já está implementado em carregarTabelaAjuste)
         let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
         if (!vendas.length) {
             alert('Nenhum dado para salvar no ajuste.');
             return;
         }
 
-        // Ordena por data
         vendas.sort((a, b) => a.data.localeCompare(b.data));
         const dataInicio = vendas[0].data;
         const dataFim = vendas[vendas.length - 1].data;
 
-        // Calcula total
         let total = 0;
         vendas.forEach(venda => {
             total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
         });
 
-        // Envia para o backend (crie uma rota /api/fechamento-semanal)
         const resp = await fetch('http://localhost:3001/api/fechamento-semanal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -366,9 +362,17 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         });
 
-        if (resp.ok) {
+        if (resp.ok) {       
             alert('Ajuste semanal salvo no histórico!');
-            // Opcional: Limpar tabela ou atualizar tela
+            carregarTabelaAjuste(); // Atualiza a tabela
+
+            // Remove todos os fechamentos do banco
+            await fetch('http://localhost:3001/api/fechamentos', { method: 'DELETE' });
+
+            // Limpa e atualiza o histórico diário (deixa em branco)
+            if (document.getElementById('historico-diario')) {
+                await atualizarHistoricoDiario();
+            }
         } else {
             alert('Erro ao salvar ajuste semanal.');
         }
@@ -408,9 +412,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', async () => {
                 const dataInicio = btn.getAttribute('data-inicio');
                 const dataFim = btn.getAttribute('data-fim');
-                // Busca vendas do histórico dentro do intervalo da semana
-                let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
-                vendas = vendas.filter(v => v.data >= dataInicio && v.data <= dataFim);
+                // Busca vendas fechadas do histórico dentro do intervalo da semana
+                let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${dataInicio}&dataFim=${dataFim}`).then(r => r.json());
 
                 // Calcula subtotal, retirado e total
                 let subtotal = 0;
