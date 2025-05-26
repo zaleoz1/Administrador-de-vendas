@@ -37,16 +37,16 @@
     </header>
     <!-- Fim Header responsivo -->
 
-    <main class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow p-6">
+    <main class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow p-6 h-[500px] flex flex-col">
         <h2 class="text-xl font-bold mb-4 text-blue-700">Todas as Vendas</h2>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto overflow-y-auto flex-1" style="max-height: 350px;">
             <table class="min-w-full divide-y divide-gray-200 mb-4" id="tabela-vendas-ajuste">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2 text-left">Item</th>
-                        <th class="px-4 py-2 text-left">Tipo</th>
-                        <th class="px-4 py-2 text-left">Valor</th>
-                        <th class="px-4 py-2 text-left">Data</th>
+                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Item</th>
+                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Tipo</th>
+                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Valor</th>
+                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Data</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,11 +54,22 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex flex-col gap-2 text-lg font-bold">
-            <span>Subtotal: <span id="subtotal-ajuste" class="text-green-600">R$ 0,00</span></span>
-            <span>Valor Retirado: <span id="retirado-ajuste" class="text-red-500">R$ 0,00</span></span>
-            <span>Total: <span id="total-ajuste" class="text-blue-700">R$ 0,00</span></span>
-        </div>
     </main>
+
+    <div class="w-full max-w-3xl mx-auto mt-6 mb-8 bg-gray-50 border border-blue-200 rounded-xl shadow flex flex-row flex-wrap justify-between gap-3 text-lg font-bold p-6">
+        <div class="flex-1 min-w-[120px] flex flex-col items-center">
+            <span>Subtotal:</span>
+            <span id="subtotal-ajuste" class="text-green-600">R$ 0,00</span>
+        </div>
+        <div class="flex-1 min-w-[120px] flex flex-col items-center">
+            <span>Valor Retirado:</span>
+            <span id="retirado-ajuste" class="text-red-500">R$ 0,00</span>
+        </div>
+        <div class="flex-1 min-w-[120px] flex flex-col items-center">
+            <span>Total:</span>
+            <span id="total-ajuste" class="text-blue-700">R$ 0,00</span>
+        </div>
+    </div>
+    
 </body>
 </html>
