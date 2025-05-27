@@ -468,4 +468,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('historico-semanal')) {
         atualizarHistoricoSemanal();
     }
+
+    // --- SEU NOVO CÓDIGO ---
+    const btnAdicionar = document.getElementById('btn-adicionar-venda');
+    const formVenda = document.getElementById('form-venda');
+    if (btnAdicionar && formVenda) {
+        btnAdicionar.addEventListener('click', function () {
+            formVenda.classList.toggle('hidden');
+            btnAdicionar.classList.add('hidden'); // Esconde o botão ao abrir o form
+        });
+    }
 });
