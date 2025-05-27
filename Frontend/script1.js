@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li class="flex justify-between items-center py-2">
                     <span>${dataFormatada}</span>
                     <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <button class="text-blue-500 underline hover:font-bold" data-data="${fechamento.data}">Ver detalhes</button>
+                    <button class="text-blue-500 underline bg-transparent focus:outline-none" data-data="${fechamento.data}">Ver detalhes</button>
                 </li>
             `;
         });
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li class="flex justify-between items-center py-2">
                     <span>${dataFormatada}</span>
                     <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <button class="text-blue-500 underline hover:font-bold" data-data="${fechamento.data}">Ver detalhes</button>
+                    <button class="text-blue-500 underline bg-transparent focus:outline-none" data-data="${fechamento.data}">Ver detalhes</button>
                 </li>
             `;
             // Reaplica evento do botão "Ver detalhes"
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li class="flex justify-between items-center py-2">
                     <span>${dataInicio} - ${dataFim}</span>
                     <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <button class="text-blue-500 underline hover:font-bold" 
+                    <button class="text-blue-500 underline bg-transparent focus:outline-none" 
                         data-inicio="${fechamento.data_inicio}" 
                         data-fim="${fechamento.data_fim}">Ver detalhes</button>
                 </li>

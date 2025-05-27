@@ -8,71 +8,85 @@
     <link rel="stylesheet" href="styles/output.css">
     <script src="Frontend/script1.js" defer></script>
 </head>
-<body class="bg-cor-primaria min-h-screen w-full">
+<body class="bg-gradient-to-br from-cor-primaria/10 to-cor-quaternaria/10 min-h-screen w-full font-['Roboto']">
     <!-- Header responsivo -->
-    <header class="bg-white shadow w-full">
-        <div class="w-full px-1 sm:px-4 flex flex-row items-center justify-between p-1 sm:p-4 relative">
+    <header class="bg-white shadow-lg w-full sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-row items-center justify-between py-3 px-4 relative">
             <!-- Menu hambúrguer à esquerda (mobile) -->
             <div class="relative">
                 <button id="menu-toggle" class="sm:hidden ml-0 mr-1 z-20" style="background: none; box-shadow: none;">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg class="w-7 h-7 text-cor-primaria" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <div id="mobile-menu" class="sm:hidden absolute left-0 top-8 z-50 bg-white rounded shadow-lg p-2 flex flex-col gap-2 w-44 hidden">
-                    <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Histórico</a>
-                    <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Ajuste</a>
-                    <a href="index.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Início</a>
+                <div id="mobile-menu" class="sm:hidden absolute left-0 top-10 z-50 bg-white rounded-xl shadow-xl p-3 flex flex-col gap-3 w-48 hidden">
+                    <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Histórico</a>
+                    <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Ajuste</a>
+                    <a href="index.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
                 </div>
             </div>
             <!-- Logo centralizada no mobile, à esquerda no desktop -->
             <img src="img/logo-azul.png" alt="Logo Azul"
-                class="h-8 sm:h-11 absolute left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 mx-auto sm:mx-0">
+                class="h-10 sm:h-12 absolute left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 mx-auto sm:mx-0">
             <!-- Botões (desktop) centralizados -->
-            <div class="hidden sm:flex gap-2 justify-center flex-1">
-                <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Histórico</a>
-                <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Ajuste</a>
-                <a href="index.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:text-cor-secundaria">Início</a>
-            </div>
-            <!-- Logo e título à direita -->
+            <nav class="hidden sm:flex gap-4 justify-center flex-1">
+                <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Histórico</a>
+                <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Ajuste</a>
+                <a href="index.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
+            </nav>
+            <!-- Avatar à direita -->
             <div class="flex flex-row items-center gap-2 ml-auto">
-                <img src="img/1.png" alt="Logo" class="w-8 h-8 sm:w-14 sm:h-14 rounded-full border-2 shadow-sm transition hover:scale-105">
+                <img src="img/1.png" alt="Logo" class="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-cor-primaria/30 shadow-md transition hover:scale-105">
             </div>
         </div>
     </header>
     <!-- Fim Header responsivo -->
 
-    <main class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow p-6 h-[500px] flex flex-col">
-        <h2 class="text-xl font-bold mb-4 text-cor-terciaria">Todas as Vendas</h2>
-        <!-- Formulário de filtro -->
-        <form id="form-filtro-ajuste" class="flex flex-wrap gap-2 mb-4 items-end">
+    <!-- Filtro no topo, sem espaço do topo -->
+    <div class="max-w-6xl mx-auto mt-4 rounded-2xl border border-cor-primaria/10 bg-white/90 shadow-inner p-4 sticky top-[64px] z-40">
+        <form id="form-filtro-ajuste" class="flex flex-wrap gap-4 items-end justify-center w-full">
             <div>
-                <label class="block text-sm font-bold mb-1" for="filtro-item">Item</label>
-                <input id="filtro-item" type="text" class="border rounded p-2 w-32" placeholder="Item">
+                <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-item">Item</label>
+                <input id="filtro-item" type="text" class="border border-cor-primaria/30 rounded-lg p-2 w-36 h-10 text-base focus:ring-2 focus:ring-cor-primaria" placeholder="Item">
             </div>
             <div>
-                <label class="block text-sm font-bold mb-1" for="filtro-tipo">Tipo</label>
-                <select id="filtro-tipo" class="border rounded p-2 w-32">
+                <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-tipo">Tipo</label>
+                <select id="filtro-tipo" class="border border-cor-primaria/30 rounded-lg p-2 w-36 h-10 text-base focus:ring-2 focus:ring-cor-primaria">
                     <option value="">Todos</option>
                     <option value="entrada">Entrada</option>
                     <option value="retirada">Retirada</option>
                 </select>
             </div>
-            <div>
-                <label class="block text-sm font-bold mb-1" for="filtro-data">Data</label>
-                <input id="filtro-data" type="date" class="border rounded p-2 w-36">
+             <div>
+                <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-forma-pagamento">Pagamento</label>
+                <select id="filtro-forma-pagamento" class="border border-cor-primaria/30 rounded-lg p-2 w-40 h-10 text-base focus:ring-2 focus:ring-cor-primaria">
+                    <option value="">Todas</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">Pix</option>
+                </select>
             </div>
-            <button type="submit" class="bg-cor-primaria text-white px-4 py-2 rounded font-bold hover:bg-cor-secundaria transition">Filtrar</button>
-            <button type="button" id="limpar-filtro-ajuste" class="bg-gray-200 text-gray-700 px-4 py-2 rounded font-bold hover:bg-gray-300 transition">Limpar</button>
+            <div>
+                <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-data">Data</label>
+                <input id="filtro-data" type="date" class="border border-cor-primaria/30 rounded-lg p-2 w-40 h-10 text-base focus:ring-2 focus:ring-cor-primaria">
+            </div>
+            <button type="submit" class="bg-cor-primaria text-white px-6 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">Filtrar</button>
+            <button type="button" id="limpar-filtro-ajuste" class="bg-cor-quaternaria/10 text-cor-quaternaria px-6 h-10 text-base rounded-lg font-bold hover:bg-cor-quaternaria/20 transition shadow">Limpar</button>
         </form>
-        <div class="overflow-x-auto overflow-y-auto flex-1" style="max-height: 350px;">
-            <table class="min-w-full divide-y divide-gray-200 mb-4" id="tabela-vendas-ajuste">
+    </div>
+     <!--fim  Filtro no topo, sem espaço do topo -->
+
+     <!-- Conteúdo da tabela principal -->
+   
+     
+       
+        <div class="mt-4 overflow-x-auto overflow-y-auto flex-1 rounded-xl border border-cor-primaria/10 bg-white shadow-inner max-w-6xl mx-auto w-full" style="max-height: 350px;">
+            <table class="min-w-full divide-y divide-cor-primaria/10 mb-4" id="tabela-vendas-ajuste">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Item</th>
-                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Tipo</th>
-                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Valor</th>
-                        <th class="px-4 py-2 text-left bg-white sticky top-0 z-10">Data</th>
+                        <th class="px-4 py-3 text-left bg-cor-primaria/10 sticky top-0 z-10 text-cor-primaria font-bold">Item</th>
+                        <th class="px-4 py-3 text-left bg-cor-primaria/10 sticky top-0 z-10 text-cor-primaria font-bold">Tipo</th>
+                        <th class="px-4 py-3 text-left bg-cor-primaria/10 sticky top-0 z-10 text-cor-primaria font-bold">Valor</th>
+                        <th class="px-4 py-3 text-left bg-cor-primaria/10 sticky top-0 z-10 text-cor-primaria font-bold">Data</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,22 +94,25 @@
                 </tbody>
             </table>
         </div>
-    </main>
 
-    <div class="w-full max-w-3xl mx-auto mt-6 mb-8 bg-gray-50 border border-blue-200 rounded-xl shadow flex flex-row flex-wrap justify-between gap-3 text-lg font-bold p-6">
+    <!-- Resumo do ajuste -->
+
+    <div class="w-full max-w-6xl mx-auto mt-8 mb-10 bg-white border border-cor-primaria/20 rounded-2xl shadow-lg flex flex-row flex-wrap justify-between gap-6 text-lg font-bold p-8">
         <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span>Subtotal:</span>
-            <span id="subtotal-ajuste" class="text-green-600">R$ 0,00</span>
+            <span class="text-cor-primaria">Subtotal:</span>
+            <span id="subtotal-ajuste" class="text-green-600 text-xl">R$ 0,00</span>
         </div>
         <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span>Valor Retirado:</span>
-            <span id="retirado-ajuste" class="text-red-500">R$ 0,00</span>
+            <span class="text-cor-primaria">Valor Retirado:</span>
+            <span id="retirado-ajuste" class="text-red-500 text-xl">R$ 0,00</span>
         </div>
         <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span>Total:</span>
-            <span id="total-ajuste" class="text-cor-terciaria">R$ 0,00</span>
+            <span class="text-cor-primaria">Total:</span>
+            <span id="total-ajuste" class="text-cor-secundaria text-xl">R$ 0,00</span>
         </div>
     </div>
-    <button id="finalizar-ajuste" class="bg-cor-primaria text-white px-4 py-2 rounded font-bold hover:bg-cor-secundaria transition mb-2">Finalizar Ajuste</button>
+    <div class="flex justify-center mb-8">
+        <button id="finalizar-ajuste" class="bg-gradient-to-r from-cor-primaria to-cor-secundaria text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:from-cor-secundaria hover:to-cor-terciaria transition">Finalizar Ajuste</button>
+    </div>
 </body>
 </html>
