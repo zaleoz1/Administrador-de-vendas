@@ -253,13 +253,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MENU HAMBURGUER MOBILE ---
+    // --- MENU HAMBURGUER MOBILE COM OVERLAY ---
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
+    const menuOverlay = document.getElementById('menu-overlay');
 
-    if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', () => {
+    if (menuToggle && mobileMenu && menuOverlay) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             mobileMenu.classList.toggle('hidden');
+            menuOverlay.classList.toggle('hidden');
+        });
+
+        menuOverlay.addEventListener('click', function() {
+            mobileMenu.classList.add('hidden');
+            menuOverlay.classList.add('hidden');
+        });
+
+        // Fecha o menu ao clicar em um link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuOverlay.classList.add('hidden');
+            });
         });
     }
 
