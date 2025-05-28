@@ -9,6 +9,8 @@
     <script src="Frontend/script1.js" defer></script>
 </head>
 <body class="bg-gradient-to-br from-cor-primaria/10 to-cor-quaternaria/10 min-h-screen w-full font-['Roboto']">
+    <!-- Overlay para o menu mobile -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden"></div>
     <!-- Header responsivo -->
     <header class="bg-white shadow-lg w-full sticky top-0 z-50">
         <div class="max-w-6xl mx-auto flex flex-row items-center justify-between py-3 px-4 relative">
@@ -43,7 +45,7 @@
     <!-- Fim Header responsivo -->
 
     <!-- Filtro no topo, sem espaço do topo -->
-    <div class="max-w-6xl mx-auto mt-4 rounded-2xl border border-cor-primaria/10 bg-white/90 shadow-inner p-4 sticky top-[64px] z-40">
+    <div class="max-w-6xl mx-auto mt-4 rounded-2xl border border-cor-primaria/10 bg-white/90 shadow-inner p-4 top-[64px] z-40">
         <form id="form-filtro-ajuste" class="flex flex-wrap gap-4 items-end justify-center w-full">
             <div>
                 <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-item">Item</label>
@@ -97,18 +99,18 @@
 
     <!-- Resumo do ajuste -->
 
-    <div class="w-full max-w-6xl mx-auto mt-8 mb-10 bg-white border border-cor-primaria/20 rounded-2xl shadow-lg flex flex-row flex-wrap justify-between gap-6 text-lg font-bold p-8">
-        <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span class="text-cor-primaria">Subtotal:</span>
-            <span id="subtotal-ajuste" class="text-green-600 text-xl">R$ 0,00</span>
+    <div class="w-full max-w-6xl mx-auto mt-8 mb-10 bg-white border border-cor-primaria/20 rounded-2xl shadow-lg flex  sm:flex-row flex-wrap justify-between gap-3 sm:gap-6 text-base sm:text-lg font-bold p-4 sm:p-8">
+        <div class="flex-1 min-w-[90px] flex flex-col items-center">
+            <span class="text-cor-primaria text-xs sm:text-base">Subtotal:</span>
+            <span id="subtotal-ajuste" class="text-green-600 text-base sm:text-xl">R$ 0,00</span>
         </div>
-        <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span class="text-cor-primaria">Valor Retirado:</span>
-            <span id="retirado-ajuste" class="text-red-500 text-xl">R$ 0,00</span>
+        <div class="flex-1 min-w-[90px] flex flex-col items-center">
+            <span class="text-cor-primaria text-xs sm:text-base">Valor Retirado:</span>
+            <span id="retirado-ajuste" class="text-red-500 text-base sm:text-xl">R$ 0,00</span>
         </div>
-        <div class="flex-1 min-w-[120px] flex flex-col items-center">
-            <span class="text-cor-primaria">Total:</span>
-            <span id="total-ajuste" class="text-cor-secundaria text-xl">R$ 0,00</span>
+        <div class="flex-1 min-w-[90px] flex flex-col items-center">
+            <span class="text-cor-primaria text-xs sm:text-base">Total:</span>
+            <span id="total-ajuste" class="text-cor-secundaria text-base sm:text-xl">R$ 0,00</span>
         </div>
     </div>
 
