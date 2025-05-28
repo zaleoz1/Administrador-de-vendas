@@ -493,4 +493,30 @@ document.addEventListener('DOMContentLoaded', () => {
             btnAdicionar.classList.add('hidden');
         });
     }
+
+    // Abrir modal de confirmação ao clicar no botão "Fechar caixa"
+    const btnCaixa1 = document.getElementById('btn-caixa1');
+    const modalCaixaFechar = document.getElementById('modal-caixa-fechar');
+    const btnCancelarFecharCaixa = document.getElementById('btn-cancelar-fechar-caixa');
+
+    if (btnCaixa1 && modalCaixaFechar) {
+        btnCaixa1.addEventListener('click', () => {
+            modalCaixaFechar.classList.remove('hidden');
+        });
+    }
+
+    if (btnCancelarFecharCaixa && modalCaixaFechar) {
+        btnCancelarFecharCaixa.addEventListener('click', () => {
+            modalCaixaFechar.classList.add('hidden');
+        });
+    }
+
+    // Fecha o modal ao clicar fora do conteúdo
+    if (modalCaixaFechar) {
+        modalCaixaFechar.addEventListener('click', function(e) {
+            if (e.target === modalCaixaFechar) {
+                modalCaixaFechar.classList.add('hidden');
+            }
+        });
+    }
 });
