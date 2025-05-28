@@ -310,10 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
             tbody.innerHTML += `
                 <tr>
-                    <td class="px-4 py-2">${venda.item}</td>
-                    <td class="px-4 py-2">${venda.tipo}</td>
-                    <td class="px-4 py-2 font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td class="px-4 py-2">${venda.data.split('-').reverse().join('/')}</td>
+                    <td class="px-2 py-1">${venda.item}</td>
+                    <td class="px-2 py-1">${venda.tipo}</td>
+                    <td class="px-2 py-1 font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td class="px-2 py-1">${venda.data.split('-').reverse().join('/')}</td>
                 </tr>
             `;
             if (venda.tipo === 'retirada') {
