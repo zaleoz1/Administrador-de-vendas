@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/output.css">
     <script src="Frontend/script1.js" defer></script>
+      <script src="Frontend/exel.js" defer></script>
+      <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gradient-to-br from-cor-primaria/10 to-cor-quaternaria/10 min-h-screen w-full font-['Roboto']">
     <!-- Overlay para o menu mobile -->
@@ -129,35 +131,5 @@
     </div>
 
     <!-- Fim Resumo do ajuste -->
- 
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const btnExportarExcel = document.getElementById('btn-exportar-excel');
-    if (btnExportarExcel) {
-        btnExportarExcel.addEventListener('click', function () {
-            const tabela = document.getElementById('tabela-vendas-ajuste');
-            if (!tabela) return;
-
-            // Cria um array de arrays com os dados da tabela
-            const ws_data = [];
-            // Cabeçalho
-            const headers = Array.from(tabela.querySelectorAll('thead th')).map(th => th.innerText);
-            ws_data.push(headers);
-            // Linhas
-            tabela.querySelectorAll('tbody tr').forEach(tr => {
-                const row = Array.from(tr.querySelectorAll('td')).map(td => td.innerText);
-                ws_data.push(row);
-            });
-
-            // Cria a planilha e o arquivo
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Ajuste");
-            XLSX.writeFile(wb, "ajuste-vendas.xlsx");
-        });
-    }
-});
-    </script>
 </body>
 </html>
