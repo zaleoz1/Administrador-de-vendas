@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function carregarVendas() {
-        if (!lista) return; // Adicione esta linha para evitar erro se o elemento não existir
+        if (!lista) return;
         fetch(`http://localhost:3001/api/vendas?data=${dataHoje()}`)
             .then(res => res.json())
             .then(vendas => {
@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </li>
             `;
         });
+
         // Eventos dos botões "Ver detalhes"
         ul.querySelectorAll('button[data-data]').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -118,8 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- EVENTOS ---
-
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -127,12 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const valor = parseFloat(form.valor.value);
             const tipo = form.tipo.value;
             const data = dataHoje();
-            const forma_pagamento = form.forma_pagamento.value; // <-- Adicione isso
+            const forma_pagamento = form.forma_pagamento.value; 
 
             fetch('http://localhost:3001/api/vendas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ item, valor, tipo, data, forma_pagamento }) // <-- Inclua aqui
+                body: JSON.stringify({ item, valor, tipo, data, forma_pagamento }) 
             })
             .then(res => res.json())
             .then(() => {
@@ -175,10 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Limpa a lista de vendas do dia
             if (lista) {
-                // Aqui você pode limpar manualmente ou recarregar:
                 carregarVendas();
             }
-            // Atualiza o total do dia
             if (totalDia) {
                 totalDia.textContent = 'R$ 0,00';
             }
@@ -202,8 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carregar vendas do dia ao iniciar
     carregarVendas();
-
-    // Adicione esta linha para carregar o histórico ao abrir o historic.html
     if (document.getElementById('historico-diario')) {
         atualizarHistoricoDiario();
     }
@@ -237,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="text-blue-500 underline bg-transparent focus:outline-none" data-data="${fechamento.data}">Ver detalhes</button>
                 </li>
             `;
-            // Reaplica evento do botão "Ver detalhes"
+
             ul.querySelectorAll('button[data-data]').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const data = btn.getAttribute('data-data');
@@ -387,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (resp.ok) {       
             alert('Ajuste semanal salvo no histórico!');
-            carregarTabelaAjuste(); // Atualiza a tabela
+            carregarTabelaAjuste();
 
             // Remove todos os fechamentos do banco
             await fetch('http://localhost:3001/api/fechamentos', { method: 'DELETE' });
@@ -435,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', async () => {
                 const dataInicio = btn.getAttribute('data-inicio');
                 const dataFim = btn.getAttribute('data-fim');
-                // Busca vendas fechadas do histórico dentro do intervalo da semana
                 let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${dataInicio}&dataFim=${dataFim}`).then(r => r.json());
 
                 // Calcula subtotal, retirado e total
@@ -450,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const total = subtotal - retirado;
 
-                // Monta o HTML do modal
+                // HTML do modal
                 const modal = document.getElementById('modal-detalhes-historico');
                 const conteudo = document.getElementById('detalhes-historico-conteudo');
                 if (conteudo && modal) {
@@ -477,7 +471,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     modal.classList.remove('hidden');
-                    // Evento do botão voltar interno
                     const btnVoltarInterno = document.getElementById('btn-voltar-modal-interno');
                     if (btnVoltarInterno) {
                         btnVoltarInterno.onclick = () => modal.classList.add('hidden');
@@ -492,13 +485,12 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarHistoricoSemanal();
     }
 
-    // --- SEU NOVO CÓDIGO ---
     const btnAdicionar = document.getElementById('btn-adicionar-venda');
     const formVenda = document.getElementById('form-venda');
     if (btnAdicionar && formVenda) {
         btnAdicionar.addEventListener('click', function () {
             formVenda.classList.toggle('hidden');
-            btnAdicionar.classList.add('hidden'); // Esconde o botão ao abrir o form
+            btnAdicionar.classList.add('hidden');
         });
     }
 });

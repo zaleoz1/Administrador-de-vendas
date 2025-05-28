@@ -4,7 +4,6 @@ const path = require('path');
 const dbPath = path.resolve(__dirname, 'vendas.db');
 const db = new sqlite3.Database(dbPath);
 
-// Cria a tabela se não existir
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS vendas (
@@ -17,7 +16,6 @@ db.serialize(() => {
     )
   `);
 
-  // Nova tabela para fechamentos diários
   db.run(`
     CREATE TABLE IF NOT EXISTS fechamentos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

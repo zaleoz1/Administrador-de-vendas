@@ -1,5 +1,4 @@
 const db = require('./DataBase');
-// Exemplo: inserir uma venda
 function inserirVenda(item, valor, tipo, data, forma_pagamento, callback) {
   db.run(
     'INSERT INTO vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)',
@@ -10,7 +9,6 @@ function inserirVenda(item, valor, tipo, data, forma_pagamento, callback) {
   );
 }
 
-// Exemplo: listar vendas do dia
 function listarVendasPorData(data, callback) {
   db.all(
     'SELECT * FROM vendas WHERE data = ?',
@@ -54,8 +52,6 @@ function copiarVendasParaHistorico(data, callback) {
     (err, vendasNovas) => {
       if (err) return callback(err);
       if (!vendasNovas.length) return callback(null, 0);
-
-      // Corrija aqui para incluir forma_pagamento
       const insert = db.prepare(
         'INSERT INTO historico_vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)'
       );
@@ -92,7 +88,7 @@ module.exports = {
   listarVendasPorData,
   inserirFechamento,
   listarFechamentos,
-  copiarVendasParaHistorico, // adicione aqui
+  copiarVendasParaHistorico,
   inserirFechamentoSemanal,
   listarFechamentosSemanais,
 };

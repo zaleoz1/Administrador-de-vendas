@@ -80,7 +80,7 @@ app.get('/api/fechamentos', (req, res) => {
 // ROTA PARA APAGAR VENDAS DO DIA
 app.delete('/api/vendas', (req, res) => {
     const { data } = req.query;
-    console.log('Data recebida para apagar:', data); // <-- Adicione isso
+    console.log('Data recebida para apagar:', data);
     const db = require('./DataBase');
     db.run('DELETE FROM vendas WHERE data = ?', [data], function(err) {
         if (err) return res.status(500).json({ error: err.message });
