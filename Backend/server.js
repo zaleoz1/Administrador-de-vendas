@@ -9,8 +9,8 @@ app.use(bodyParser.json());
 
 // Rota para inserir venda
 app.post('/api/vendas', (req, res) => {
-    const { item, valor, tipo, data } = req.body;
-    inserirVenda(item, valor, tipo, data, (err, id) => {
+    const { item, valor, tipo, data, forma_pagamento } = req.body;
+    inserirVenda(item, valor, tipo, data, forma_pagamento, (err, id) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ id });
     });
@@ -113,9 +113,9 @@ app.post('/api/fechamento-semanal', async (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         db.all('SELECT * FROM historico_vendas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, vendas) => {
             if (err) return res.status(500).json({ error: err.message });
-            const insert = db.prepare('INSERT INTO vendas_fechadas (item, valor, tipo, data, data_inicio, data_fim) VALUES (?, ?, ?, ?, ?, ?)');
+            const insert = db.prepare('INSERT INTO vendas_fechadas (item, valor, tipo, data, data_inicio, data_fim, forma_pagamento) VALUES (?, ?, ?, ?, ?, ?, ?)');
             vendas.forEach(v => {
-                insert.run([v.item, v.valor, v.tipo, v.data, dataInicio, dataFim]);
+                insert.run([v.item, v.valor, v.tipo, v.data, dataInicio, dataFim, v.forma_pagamento]);
             });
             insert.finalize();
             const { inserirFechamentoSemanal } = require('./script');

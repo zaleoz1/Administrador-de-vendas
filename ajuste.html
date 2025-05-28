@@ -81,17 +81,18 @@
    
      
        
-        <div class="mt-4 overflow-x-auto overflow-y-auto flex-1 rounded-xl border border-cor-primaria/10 bg-white shadow-inner max-w-6xl mx-auto w-full" style="max-height: 350px;">
-            <table class="divide-y h-80 overflow-y-auto px-6 py-6 min-w-full divide-y divide-cor-no mb-4" id="tabela-vendas-ajuste">
+        <div class="mt-4 overflow-x-auto overflow-y-auto flex-1 rounded-xl border border-cor-primaria/10 bg-white shadow-inner max-w-6xl mx-auto w-full" style="max-height: 350px; min-height: 350px;">
+            <table class="min-w-full w-full mb-4" id="tabela-vendas-ajuste">
                 <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold">Item</th>
-                        <th class="px-4 py-3 text-left bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold">Tipo</th>
-                        <th class="px-4 py-3 text-left bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold">Valor</th>
-                        <th class="px-4 py-3 text-left bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold">Data</th>
+                        <th class="px-2 py-2 text-center bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold text-sm">Item</th>
+                        <th class="px-2 py-2 text-center bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold text-sm">Tipo</th>
+                        <th class="px-2 py-2 text-center bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold text-sm">Pagamento</th>
+                        <th class="px-2 py-2 text-center bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold text-sm">Valor</th>
+                        <th class="px-2 py-2 text-center bg-cor-no sticky top-0 z-10 text-cor-primaria font-bold text-sm">Data</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="space-y-2">
                     <!-- Linhas serão preenchidas via JS -->
                 </tbody>
             </table>

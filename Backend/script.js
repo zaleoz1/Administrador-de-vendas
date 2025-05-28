@@ -1,9 +1,9 @@
 const db = require('./DataBase');
 // Exemplo: inserir uma venda
-function inserirVenda(item, valor, tipo, data, callback) {
+function inserirVenda(item, valor, tipo, data, forma_pagamento, callback) {
   db.run(
-    'INSERT INTO vendas (item, valor, tipo, data) VALUES (?, ?, ?, ?)',
-    [item, valor, tipo, data],
+    'INSERT INTO vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)',
+    [item, valor, tipo, data, forma_pagamento],
     function (err) {
       callback(err, this?.lastID);
     }
@@ -45,7 +45,6 @@ function listarFechamentos(callback) {
 
 function copiarVendasParaHistorico(data, callback) {
   const db = require('./DataBase');
-  // Seleciona vendas do dia que ainda não estão no histórico
   db.all(
     `SELECT v.* FROM vendas v
          LEFT JOIN historico_vendas h
@@ -54,14 +53,14 @@ function copiarVendasParaHistorico(data, callback) {
     [data],
     (err, vendasNovas) => {
       if (err) return callback(err);
-      if (!vendasNovas.length) return callback(null, 0); // Nada novo para copiar
+      if (!vendasNovas.length) return callback(null, 0);
 
-      // Insere cada venda nova no histórico
+      // Corrija aqui para incluir forma_pagamento
       const insert = db.prepare(
-        'INSERT INTO historico_vendas (item, valor, tipo, data) VALUES (?, ?, ?, ?)'
+        'INSERT INTO historico_vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)'
       );
       vendasNovas.forEach((venda) => {
-        insert.run([venda.item, venda.valor, venda.tipo, venda.data]);
+        insert.run([venda.item, venda.valor, venda.tipo, venda.data, venda.forma_pagamento]);
       });
       insert.finalize((err) => callback(err, vendasNovas.length));
     }

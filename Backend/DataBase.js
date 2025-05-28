@@ -12,7 +12,8 @@ db.serialize(() => {
         item TEXT NOT NULL,
         valor REAL NOT NULL,
         tipo TEXT NOT NULL,
-        data TEXT NOT NULL
+        data TEXT NOT NULL,
+        forma_pagamento TEXT NOT NULL
     )
   `);
 
@@ -42,7 +43,19 @@ db.serialize(() => {
         tipo TEXT NOT NULL,
         data TEXT NOT NULL,
         data_inicio TEXT NOT NULL,
-        data_fim TEXT NOT NULL
+        data_fim TEXT NOT NULL,
+        forma_pagamento TEXT
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS historico_vendas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item TEXT NOT NULL,
+        valor REAL NOT NULL,
+        tipo TEXT NOT NULL,
+        data TEXT NOT NULL,
+        forma_pagamento TEXT
     )
   `);
 });

@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li class="flex justify-between items-center py-2">
                     <span>${venda.item}</span>
                     <span class="font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                    <span class="text-xs text-gray-500 ml-2">${venda.forma_pagamento || ''}</span>
                 </li>
             `;
             total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
@@ -126,11 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const valor = parseFloat(form.valor.value);
             const tipo = form.tipo.value;
             const data = dataHoje();
+            const forma_pagamento = form.forma_pagamento.value; // <-- Adicione isso
 
             fetch('http://localhost:3001/api/vendas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ item, valor, tipo, data })
+                body: JSON.stringify({ item, valor, tipo, data, forma_pagamento }) // <-- Inclua aqui
             })
             .then(res => res.json())
             .then(() => {
@@ -301,6 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filtros.data) {
             vendas = vendas.filter(v => v.data === filtros.data);
         }
+        if (filtros.forma_pagamento) {
+            vendas = vendas.filter(v => v.forma_pagamento === filtros.forma_pagamento);
+        }
 
         tbody.innerHTML = '';
         let subtotal = 0;
@@ -309,11 +314,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const sinal = venda.tipo === 'retirada' ? '-' : '+';
             const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
             tbody.innerHTML += `
-                <tr>
-                    <td class="px-2 py-1">${venda.item}</td>
-                    <td class="px-2 py-1">${venda.tipo}</td>
-                    <td class="px-2 py-1 font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td class="px-2 py-1">${venda.data.split('-').reverse().join('/')}</td>
+                <tr class="bg-white shadow-sm rounded-lg">
+                    <td class="px-2 py-3 text-center text-sm">${venda.item}</td>
+                    <td class="px-2 py-3 text-center text-sm">${venda.tipo}</td>
+                    <td class="px-2 py-3 text-center text-sm">${venda.forma_pagamento || ''}</td>
+                    <td class="px-2 py-3 text-center text-sm font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    <td class="px-2 py-3 text-center text-sm">${venda.data.split('-').reverse().join('/')}</td>
                 </tr>
             `;
             if (venda.tipo === 'retirada') {
@@ -334,8 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const item = document.getElementById('filtro-item').value;
             const tipo = document.getElementById('filtro-tipo').value;
+            const forma_pagamento = document.getElementById('filtro-forma-pagamento').value; // <-- Adicione isso
             const data = document.getElementById('filtro-data').value;
-            carregarTabelaAjuste({ item, tipo, data });
+            carregarTabelaAjuste({ item, tipo, forma_pagamento, data }); // <-- Inclua aqui
         });
         // Botão limpar filtro
         document.getElementById('limpar-filtro-ajuste').addEventListener('click', function() {
