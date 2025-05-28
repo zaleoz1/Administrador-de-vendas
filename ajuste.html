@@ -45,7 +45,7 @@
     <!-- Fim Header responsivo -->
 
     <!-- Filtro no topo, sem espaço do topo -->
-    <div class="max-w-6xl mx-auto mt-4 rounded-2xl border border-cor-primaria/10 bg-white/90 shadow-inner p-4 top-[64px] z-40">
+    <div class="max-w-6xl mx-auto mt-4 rounded-xl border border-cor-primaria/10 bg-white/90 shadow-inner p-4 top-[64px] z-40">
         <form id="form-filtro-ajuste" class="flex flex-wrap gap-4 items-end justify-center w-full">
             <div>
                 <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-item">Item</label>
@@ -71,17 +71,30 @@
                 <label class="block text-sm font-bold mb-1 text-cor-primaria" for="filtro-data">Data</label>
                 <input id="filtro-data" type="date" class="border border-cor-primaria/30 rounded-lg p-2 w-40 h-10 text-base focus:ring-2 focus:ring-cor-primaria">
             </div>
-            <button type="submit" class="bg-cor-primaria text-white px-6 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">Filtrar</button>
-            <button type="button" id="limpar-filtro-ajuste" class="bg-cor-quaternaria/10 text-cor-quaternaria px-6 h-10 text-base rounded-lg font-bold hover:bg-cor-quaternaria/20 transition shadow">Limpar</button>
+            <button type="submit" class="bg-cor-primaria text-white px-3 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">
+                 <img src="img/filtrar.png" alt="Exportar Excel" class="h-6 w-6" />
+            </button>
+            <button type="button" id="limpar-filtro-ajuste" class="bg-cor-primaria text-white px-3 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">
+                 <img src="img/limpar.png" alt="Exportar Excel" class="h-6 w-6" />
+            </button>
         </form>
     </div>
      <!--fim  Filtro no topo, sem espaço do topo -->
+
+     <div class="w-full max-w-6xl mx-auto mt-4 bg-cor-no-escuro shadow-lg flex sm:flex-row flex-wrap justify-between gap-3 sm:gap-6 text-base sm:text-lg font-bold p-2 sm:p-4 rounded-t-xl">
+        <button id="btn-exportar-excel" class="bg-cor-primaria text-white px-2 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">
+            <img src="img/exel.png" alt="Exportar Excel" class="h-6 w-6" />
+        </button>
+        <button id="finalizar-ajuste" class="bg-cor-primaria text-white px-3 h-10 text-base rounded-lg font-bold hover:bg-cor-secundaria transition shadow">
+            Ajustar
+        </button>
+    </div>
 
      <!-- Conteúdo da tabela principal -->
    
      
        
-        <div class="mt-4 overflow-x-auto overflow-y-auto flex-1 rounded-xl border border-cor-primaria/10 bg-white shadow-inner max-w-6xl mx-auto w-full" style="max-height: 350px; min-height: 350px;">
+        <div class=" overflow-x-auto overflow-y-auto flex-1  shadow-inner max-w-6xl mx-auto w-full" style="max-height: 350px; min-height: 350px;">
             <table class="min-w-full w-full mb-4" id="tabela-vendas-ajuste">
                 <thead>
                     <tr>
@@ -97,10 +110,10 @@
                 </tbody>
             </table>
         </div>
-
+        
     <!-- Resumo do ajuste -->
 
-    <div class="w-full max-w-6xl mx-auto mt-8 mb-10 bg-white border border-cor-primaria/20 rounded-2xl shadow-lg flex  sm:flex-row flex-wrap justify-between gap-3 sm:gap-6 text-base sm:text-lg font-bold p-4 sm:p-8">
+    <div class="w-full max-w-6xl mx-auto mt-2 mb-10 bg-white border border-cor-primaria/20 rounded-2xl shadow-lg flex  sm:flex-row flex-wrap justify-between gap-3 sm:gap-6 text-base sm:text-lg font-bold p-4 sm:p-8">
         <div class="flex-1 min-w-[90px] flex flex-col items-center">
             <span class="text-cor-primaria text-xs sm:text-base">Subtotal:</span>
             <span id="subtotal-ajuste" class="text-green-600 text-base sm:text-xl">R$ 0,00</span>
@@ -115,9 +128,36 @@
         </div>
     </div>
 
+    <!-- Fim Resumo do ajuste -->
+ 
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnExportarExcel = document.getElementById('btn-exportar-excel');
+    if (btnExportarExcel) {
+        btnExportarExcel.addEventListener('click', function () {
+            const tabela = document.getElementById('tabela-vendas-ajuste');
+            if (!tabela) return;
 
-    <div class="flex justify-center mb-8">
-        <button id="finalizar-ajuste" class="bg-gradient-to-r from-cor-primaria to-cor-secundaria text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:from-cor-secundaria hover:to-cor-terciaria transition">Finalizar Ajuste</button>
-    </div>
+            // Cria um array de arrays com os dados da tabela
+            const ws_data = [];
+            // Cabeçalho
+            const headers = Array.from(tabela.querySelectorAll('thead th')).map(th => th.innerText);
+            ws_data.push(headers);
+            // Linhas
+            tabela.querySelectorAll('tbody tr').forEach(tr => {
+                const row = Array.from(tr.querySelectorAll('td')).map(td => td.innerText);
+                ws_data.push(row);
+            });
+
+            // Cria a planilha e o arquivo
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Ajuste");
+            XLSX.writeFile(wb, "ajuste-vendas.xlsx");
+        });
+    }
+});
+    </script>
 </body>
 </html>
