@@ -9,6 +9,7 @@ module.exports = {
         'cor-terciaria': '#0b445b',
         'cor-quaternaria': '#05354a',
         'cor-escura': '#00253a',
+        'cor-no': '#E7EFF2',
       },
       blue: {
         500: '#15637b',
