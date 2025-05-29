@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico, inserirFechamentoSemanal, listarFechamentosSemanais } = require('./script');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '../Frontend')));
 
 // Rota para inserir venda
 app.post('/api/vendas', (req, res) => {
@@ -163,7 +165,7 @@ app.get('/api/vendas-fechadas', (req, res) => {
     });
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });

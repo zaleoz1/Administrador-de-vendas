@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modal-historico');
     const fecharModal = document.getElementById('fechar-modal-historico');
 
+    const API_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:3001'
+    : '';
+
     function formatarValor(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
@@ -21,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function carregarVendas() {
         if (!lista) return;
-        fetch(`http://localhost:3001/api/vendas?data=${dataHoje()}`)
+        fetch(`${API_URL}/api/vendas?data=${dataHoje()}`)
             .then(res => res.json())
             .then(vendas => {
                 lista.innerHTML = '';
@@ -47,12 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function buscarVendasPorData(data) {
-        return fetch(`http://localhost:3001/api/vendas?data=${data}`)
+        return fetch(`/api/vendas?data=${data}`)
             .then(res => res.json());
     }
 
     function buscarVendasHistoricoPorData(data) {
-        return fetch(`http://localhost:3001/api/historico-vendas?data=${data}`)
+        return fetch('/api/historico-vendas?data=' + data)
             .then(res => res.json());
     }
 
@@ -60,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ul = document.getElementById('historico-diario');
         if (!ul) return;
         ul.innerHTML = '';
-        const fechamentos = await fetch('http://localhost:3001/api/fechamentos').then(r => r.json());
+        const fechamentos = await fetch('/api/fechamentos').then(r => r.json());
         fechamentos.forEach((fechamento, idx) => {
             const dataFormatada = fechamento.data.split('-').reverse().join('/');
             ul.innerHTML += `
@@ -129,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = dataHoje();
             const forma_pagamento = form.forma_pagamento.value; 
 
-            fetch('http://localhost:3001/api/vendas', {
+            fetch('/api/vendas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ item, valor, tipo, data, forma_pagamento }) 
@@ -154,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             vendas.forEach(venda => {
                 total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
             });
-            const resp = await fetch('http://localhost:3001/api/fechamentos', {
+            const resp = await fetch('/api/fechamentos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data, total })
@@ -166,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Apaga as vendas do dia no banco
-            await fetch(`http://localhost:3001/api/vendas?data=${data}`, {
+            await fetch(`/api/vendas?data=${data}`, {
                 method: 'DELETE'
             });
 
@@ -219,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             // Busca fechamentos apenas para a data selecionada
-            const fechamentos = await fetch('http://localhost:3001/api/fechamentos').then(r => r.json());
+            const fechamentos = await fetch('/api/fechamentos').then(r => r.json());
             const fechamento = fechamentos.find(f => f.data === data);
             if (!fechamento) {
                 ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico">Nenhum registro encontrado.</li>';
@@ -287,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tbody) return;
 
         // Busca todas as vendas do histórico
-        let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+        let vendas = await fetch('/api/historico-vendas').then(r => r.json());
 
         // Filtros
         if (filtros.item) {
@@ -356,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para finalizar ajuste semanal
     async function finalizarAjuste() {
-        let vendas = await fetch('http://localhost:3001/api/historico-vendas').then(r => r.json());
+        let vendas = await fetch('/api/historico-vendas').then(r => r.json());
         if (!vendas.length) {
             alert('Nenhum dado para salvar no ajuste.');
             return;
@@ -371,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
             total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
         });
 
-        const resp = await fetch('http://localhost:3001/api/fechamento-semanal', {
+        const resp = await fetch('/api/fechamento-semanal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -386,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             carregarTabelaAjuste();
 
             // Remove todos os fechamentos do banco
-            await fetch('http://localhost:3001/api/fechamentos', { method: 'DELETE' });
+            await fetch('/api/fechamentos', { method: 'DELETE' });
 
             // Limpa e atualiza o histórico diário (deixa em branco)
             if (document.getElementById('historico-diario')) {
@@ -407,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ul = document.getElementById('historico-semanal');
         if (!ul) return;
         ul.innerHTML = '';
-        const semanais = await fetch('http://localhost:3001/api/fechamento-semanal').then(r => r.json());
+        const semanais = await fetch('/api/fechamento-semanal').then(r => r.json());
         if (!semanais.length) {
             ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico-semanal">Nenhum fechamento semanal encontrado.</li>';
             return;
@@ -417,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dataFim = fechamento.data_fim.split('-').reverse().join('/');
 
             // Busca as vendas fechadas desse período para calcular o subtotal
-            let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${fechamento.data_inicio}&dataFim=${fechamento.data_fim}`).then(r => r.json());
+            let vendas = await fetch(`/api/vendas-fechadas?dataInicio=${fechamento.data_inicio}&dataFim=${fechamento.data_fim}`).then(r => r.json());
             let subtotal = 0;
             vendas.forEach(venda => {
                 if (venda.tipo !== 'retirada') {
@@ -441,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', async () => {
                 const dataInicio = btn.getAttribute('data-inicio');
                 const dataFim = btn.getAttribute('data-fim');
-                let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${dataInicio}&dataFim=${dataFim}`).then(r => r.json());
+                let vendas = await fetch(`/api/vendas-fechadas?dataInicio=${dataInicio}&dataFim=${dataFim}`).then(r => r.json());
 
                 // Calcula subtotal, retirado e total
                 let subtotal = 0;
