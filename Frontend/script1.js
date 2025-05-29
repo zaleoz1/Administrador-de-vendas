@@ -33,11 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         const sinal = venda.tipo === 'retirada' ? '-' : '+';
                         const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
                         lista.innerHTML += `
-                            <li class="flex justify-between items-center py-2">
-                                <span>${venda.item}</span>
-                                <span class="font-bold ${cor}">${sinal} ${formatarValor(venda.valor)}</span>
-                            </li>
-                        `;
+    <li class="flex justify-between items-center py-2">
+        <span class="flex-1 text-left">${venda.item}</span>
+        <span class="flex-1 text-center text-xs text-gray-500">${venda.forma_pagamento ? venda.forma_pagamento : ''}</span>
+        <span class="flex-1 text-right font-bold ${cor}">${sinal} ${formatarValor(venda.valor)}</span>
+    </li>
+`;
                         total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
                     });
                 }
