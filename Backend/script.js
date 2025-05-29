@@ -64,11 +64,31 @@ function copiarVendasParaHistorico(data, callback) {
 }
 
 function inserirFechamentoSemanal(dataInicio, dataFim, total, callback) {
-  db.run(
-    'INSERT INTO historico_semanal (data_inicio, data_fim, total) VALUES (?, ?, ?)',
-    [dataInicio, dataFim, total],
-    function (err) {
-      callback(err, this?.lastID);
+  db.get(
+    'SELECT * FROM historico_semanal WHERE data_inicio = ? AND data_fim = ?',
+    [dataInicio, dataFim],
+    function (err, row) {
+      if (err) return callback(err);
+      if (row) {
+        // Já existe: atualize somando o total
+        const novoTotal = row.total + total;
+        db.run(
+          'UPDATE historico_semanal SET total = ? WHERE data_inicio = ? AND data_fim = ?',
+          [novoTotal, dataInicio, dataFim],
+          function (err) {
+            callback(err, row.id);
+          }
+        );
+      } else {
+        // Não existe: insira normalmente
+        db.run(
+          'INSERT INTO historico_semanal (data_inicio, data_fim, total) VALUES (?, ?, ?)',
+          [dataInicio, dataFim, total],
+          function (err) {
+            callback(err, this?.lastID);
+          }
+        );
+      }
     }
   );
 }

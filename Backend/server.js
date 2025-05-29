@@ -108,25 +108,21 @@ app.get('/api/historico-vendas', (req, res) => {
 app.post('/api/fechamento-semanal', async (req, res) => {
     const { dataInicio, dataFim, total } = req.body;
     const db = require('./DataBase');
-    // Remove vendas fechadas do mesmo período para evitar duplicidade
-    db.run('DELETE FROM vendas_fechadas WHERE data_inicio = ? AND data_fim = ?', [dataInicio, dataFim], function (err) {
+    db.all('SELECT * FROM historico_vendas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, vendas) => {
         if (err) return res.status(500).json({ error: err.message });
-        db.all('SELECT * FROM historico_vendas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, vendas) => {
+        const insert = db.prepare('INSERT INTO vendas_fechadas (item, valor, tipo, data, data_inicio, data_fim, forma_pagamento) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        vendas.forEach(v => {
+            insert.run([v.item, v.valor, v.tipo, v.data, dataInicio, dataFim, v.forma_pagamento]);
+        });
+        insert.finalize();
+        const { inserirFechamentoSemanal } = require('./script');
+        inserirFechamentoSemanal(dataInicio, dataFim, total, (err, id) => {
             if (err) return res.status(500).json({ error: err.message });
-            const insert = db.prepare('INSERT INTO vendas_fechadas (item, valor, tipo, data, data_inicio, data_fim, forma_pagamento) VALUES (?, ?, ?, ?, ?, ?, ?)');
-            vendas.forEach(v => {
-                insert.run([v.item, v.valor, v.tipo, v.data, dataInicio, dataFim, v.forma_pagamento]);
-            });
-            insert.finalize();
-            const { inserirFechamentoSemanal } = require('./script');
-            inserirFechamentoSemanal(dataInicio, dataFim, total, (err, id) => {
+            db.run('DELETE FROM fechamentos', [], function (err) {
                 if (err) return res.status(500).json({ error: err.message });
-                db.run('DELETE FROM fechamentos', [], function (err) {
+                db.run('DELETE FROM historico_vendas', [], function (err) {
                     if (err) return res.status(500).json({ error: err.message });
-                    db.run('DELETE FROM historico_vendas', [], function (err) {
-                        if (err) return res.status(500).json({ error: err.message });
-                        res.json({ id });
-                    });
+                    res.json({ id });
                 });
             });
         });
