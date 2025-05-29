@@ -412,19 +412,29 @@ document.addEventListener('DOMContentLoaded', () => {
             ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico-semanal">Nenhum fechamento semanal encontrado.</li>';
             return;
         }
-        semanais.forEach(fechamento => {
+        for (const fechamento of semanais) {
             const dataInicio = fechamento.data_inicio.split('-').reverse().join('/');
             const dataFim = fechamento.data_fim.split('-').reverse().join('/');
+
+            // Busca as vendas fechadas desse período para calcular o subtotal
+            let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${fechamento.data_inicio}&dataFim=${fechamento.data_fim}`).then(r => r.json());
+            let subtotal = 0;
+            vendas.forEach(venda => {
+                if (venda.tipo !== 'retirada') {
+                    subtotal += parseFloat(venda.valor);
+                }
+            });
+
             ul.innerHTML += `
                 <li class="flex justify-between items-center py-2">
                     <span>${dataInicio} - ${dataFim}</span>
-                    <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                    <span class="font-bold text-green-600">${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                     <button class="text-blue-500 underline bg-transparent focus:outline-none" 
                         data-inicio="${fechamento.data_inicio}" 
                         data-fim="${fechamento.data_fim}">Ver detalhes</button>
                 </li>
             `;
-        });
+        }
 
         // Evento dos botões "Ver detalhes" do histórico semanal
         ul.querySelectorAll('button[data-inicio][data-fim]').forEach(btn => {
