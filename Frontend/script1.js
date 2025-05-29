@@ -519,4 +519,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Abrir modal de ajuste ao clicar no botão "Ajustar"
+    const btnModalFinalizarAjuste = document.getElementById('modal-finalizar-ajuste');
+    const modalCaixaFecharAjuste = document.getElementById('modal-caixa-fechar-ajuste');
+    const btnCancelarFinalizarAjuste = document.getElementById('btn-cancelar-finalizar ajuste');
+
+    if (btnModalFinalizarAjuste && modalCaixaFecharAjuste) {
+        btnModalFinalizarAjuste.addEventListener('click', () => {
+            modalCaixaFecharAjuste.classList.remove('hidden');
+        });
+    }
+
+    // Fechar modal ao clicar em "Voltar" ou fora do conteúdo
+    if (btnCancelarFinalizarAjuste && modalCaixaFecharAjuste) {
+        btnCancelarFinalizarAjuste.addEventListener('click', () => {
+            modalCaixaFecharAjuste.classList.add('hidden');
+        });
+    }
+    if (modalCaixaFecharAjuste) {
+        modalCaixaFecharAjuste.addEventListener('click', function(e) {
+            if (e.target === modalCaixaFecharAjuste) {
+                modalCaixaFecharAjuste.classList.add('hidden');
+            }
+        });
+    }
 });
