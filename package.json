@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css --watch"
+    "dev": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css --watch",
+    "build": "npx tailwindcss -i ./styles/style.css -o ./styles/output.css",
+    "start": "node Backend/server.js",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",

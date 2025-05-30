@@ -555,5 +555,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const btnLucroVendedor = document.getElementById('btn-lucro-vendedor');
+    const modalLucroVendedor = document.getElementById('modal-lucro-vendedor');
+    const valorLucroVendedor = document.getElementById('valor-lucro-vendedor');
+    const btnFecharLucroVendedor = document.getElementById('btn-fechar-lucro-vendedor');
+    const subtotalSpan = document.getElementById('subtotal-ajuste');
+
+    function atualizarLucroVendedor() {
+        // Pega o subtotal atual da tela
+        let subtotal = 0;
+        if (subtotalSpan) {
+            // Remove "R$" e "." e troca "," por "."
+            subtotal = parseFloat(subtotalSpan.textContent.replace(/[^\d,]/g, '').replace('.', '').replace(',', '.')) || 0;
+        }
+        const lucro = subtotal * 0.10;
+        if (valorLucroVendedor) {
+            valorLucroVendedor.textContent = lucro.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+    }
+
+    if (btnLucroVendedor && modalLucroVendedor) {
+        btnLucroVendedor.addEventListener('click', () => {
+            atualizarLucroVendedor();
+            modalLucroVendedor.classList.remove('hidden');
+        });
+    }
+
+    if (btnFecharLucroVendedor && modalLucroVendedor) {
+        btnFecharLucroVendedor.addEventListener('click', () => {
+            modalLucroVendedor.classList.add('hidden');
+        });
+    }
+
+    // Atualiza o valor do lucro sempre que o subtotal mudar
+    const observer = new MutationObserver(atualizarLucroVendedor);
+    if (subtotalSpan) {
+        observer.observe(subtotalSpan, { childList: true });
+    }
 });
 
