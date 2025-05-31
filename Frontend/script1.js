@@ -806,6 +806,35 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'login.html';
         });
     }
+
+    // OCULTAR FORMULÁRIO DE VENDA E BOTÃO FECHAR CAIXA PARA USUÁRIO COMUM
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+    if (usuario && usuario.tipo_conta === 'usuario') {
+        const secaoVenda = document.getElementById('secao-venda');
+        if (secaoVenda) {
+            secaoVenda.style.display = 'none';
+        }
+        const btnCaixa1 = document.getElementById('btn-caixa1');
+        if (btnCaixa1) {
+            btnCaixa1.style.display = 'none';
+        }
+    }
+
+    // OCULTAR LINKS DE CADASTRO PARA USUÁRIO COMUM
+    if (usuario && (usuario.tipo_conta === 'usuario' || usuario.tipo_conta === 'operador')) {
+        // Oculta todos os links para cadastro.html
+        document.querySelectorAll('a[href="cadastro.html"]').forEach(link => {
+            link.style.display = 'none';
+        });
+    }
+
+    if (usuario && usuario.tipo_conta === 'usuario') {
+        // Oculta o botão de ajuste semanal
+        const btnAjuste = document.getElementById('modal-finalizar-ajuste');
+        if (btnAjuste) {
+            btnAjuste.style.display = 'none';
+        }
+    }
 });
 
 
