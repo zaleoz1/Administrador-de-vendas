@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico, inserirFechamentoSemanal, listarFechamentosSemanais } = require('./script');
+const { inserirVenda, listarVendasPorData, inserirFechamento, listarFechamentos, copiarVendasParaHistorico, inserirFechamentoSemanal, listarFechamentosSemanais, inserirUsuario } = require('./script');
 const path = require('path');
 
 const app = express();
@@ -162,6 +162,43 @@ app.get('/api/vendas-fechadas', (req, res) => {
     db.all('SELECT * FROM vendas_fechadas WHERE data >= ? AND data <= ?', [dataInicio, dataFim], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
+    });
+});
+
+// ROTA PARA CADASTRAR USUÁRIO
+app.post('/api/usuarios', (req, res) => {
+    const { nome, cpf, tipo_conta, senha } = req.body;
+    if (!nome || !cpf || !tipo_conta || !senha) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    }
+    inserirUsuario(nome, cpf, tipo_conta, senha, (err, id) => {
+        if (err) {
+            if (err.message.includes('UNIQUE constraint failed')) {
+                return res.status(400).json({ error: 'CPF já cadastrado.' });
+            }
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ id });
+    });
+});
+
+const db = require('./DataBase');
+// ROTA PARA LISTAR USUÁRIOS
+app.get('/api/usuarios', (req, res) => {
+    db.all('SELECT nome, cpf, tipo_conta, senha FROM usuarios', (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// ROTA PARA APAGAR USUÁRIO
+app.delete('/api/usuarios/:cpf', (req, res) => {
+    const { cpf } = req.params;
+    const db = require('./DataBase');
+    db.run('DELETE FROM usuarios WHERE cpf = ?', [cpf], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: 'Usuário não encontrado.' });
+        res.json({ deleted: true });
     });
 });
 

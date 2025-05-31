@@ -623,5 +623,148 @@ document.addEventListener('DOMContentLoaded', () => {
             btnAdicionar.classList.remove('hidden');
         });
     }
+
+    document.getElementById('form-cadastro-usuario').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const tipo_conta = document.getElementById('tipo-conta').value;
+        const senha = document.getElementById('senha').value;
+        const confirmarSenha = document.getElementById('confirmar-senha').value;
+
+        if (senha !== confirmarSenha) {
+            alert('As senhas não coincidem!');
+            return;
+        }
+
+        const res = await fetch('http://localhost:3001/api/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, cpf, tipo_conta, senha })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert('Usuário cadastrado com sucesso!');
+            document.getElementById('form-cadastro-usuario').reset();
+        } else {
+            alert(data.error || 'Erro ao cadastrar usuário.');
+        }
+    });
+
+    document.getElementById('toggleSenha').addEventListener('click', function() {
+        const input = document.getElementById('senha');
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            this.textContent = '👁️';
+        }
+    });
+    document.getElementById('toggleConfirmarSenha').addEventListener('click', function() {
+        const input = document.getElementById('confirmar-senha');
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            this.textContent = '👁️';
+        }
+    });
+
+    // MODAL DE USUÁRIOS
+    const btnVerUsuarios = document.getElementById('btn-ver-usuarios');
+    const modalUsuarios = document.getElementById('modal-usuarios');
+    const fecharModalUsuarios = document.getElementById('fechar-modal-usuarios');
+    const listaUsuarios = document.getElementById('lista-usuarios');
+
+    if (btnVerUsuarios && modalUsuarios && fecharModalUsuarios && listaUsuarios) {
+        btnVerUsuarios.addEventListener('click', async () => {
+            modalUsuarios.classList.remove('hidden');
+            listaUsuarios.innerHTML = '<p class="text-gray-400 text-center">Carregando...</p>';
+            try {
+                const res = await fetch('http://localhost:3001/api/usuarios');
+                const usuarios = await res.json();
+                if (usuarios.length === 0) {
+                    listaUsuarios.innerHTML = '<p class="text-gray-400 text-center">Nenhum usuário cadastrado.</p>';
+                } else {
+                    listaUsuarios.innerHTML = `
+    <table class="w-full text-sm">
+        <thead>
+            <tr>
+                <th class="text-center">Nome</th>
+                <th class="text-center">CPF</th>
+                <th class="text-center">Tipo de Conta</th>
+                <th class="text-center">Senha</th>
+                <th class="text-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+            ${usuarios.map(u => `
+                <tr>
+                    <td class="text-center">${u.nome}</td>
+                    <td class="text-center">${u.cpf}</td>
+                    <td class="text-center">${u.tipo_conta}</td>
+                    <td class="text-center">${u.senha}</td>
+                    <td class="text-center">
+                        <button class="btn-excluir-usuario bg-red-500 text-white px-2 py-1 rounded text-xs" data-cpf="${u.cpf}">Excluir</button>
+                    </td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+`;
+
+                    // ADICIONE ESTE BLOCO LOGO APÓS ATUALIZAR O innerHTML:
+                    listaUsuarios.querySelectorAll('.btn-excluir-usuario').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+                            const cpf = this.getAttribute('data-cpf');
+                            const res = await fetch(`http://localhost:3001/api/usuarios/${cpf}`, {
+                                method: 'DELETE'
+                            });
+                            if (res.ok) {
+                                this.closest('tr').remove();
+                            } else {
+                                alert('Erro ao excluir usuário.');
+                            }
+                        });
+                    });
+                }
+            } catch {
+                listaUsuarios.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar usuários.</p>';
+            }
+        });
+
+        fecharModalUsuarios.addEventListener('click', () => {
+            modalUsuarios.classList.add('hidden');
+        });
+
+        // Fecha ao clicar fora do conteúdo
+        modalUsuarios.addEventListener('click', (e) => {
+            if (e.target === modalUsuarios) {
+                modalUsuarios.classList.add('hidden');
+            }
+        });
+    }
+
+    // Excluir usuário
+    listaUsuarios.querySelectorAll('.btn-excluir-usuario').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+            const cpf = this.getAttribute('data-cpf');
+            const res = await fetch(`http://localhost:3001/api/usuarios/${cpf}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                // Atualiza a lista após exclusão
+                this.closest('tr').remove();
+            } else {
+                alert('Erro ao excluir usuário.');
+            }
+        });
+    });
 });
 
