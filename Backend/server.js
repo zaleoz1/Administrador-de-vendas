@@ -202,6 +202,18 @@ app.delete('/api/usuarios/:cpf', (req, res) => {
     });
 });
 
+// ROTA PARA LOGIN
+app.post('/api/login', (req, res) => {
+    const { cpf, senha } = req.body;
+    const db = require('./DataBase');
+    db.get('SELECT * FROM usuarios WHERE cpf = ? AND senha = ?', [cpf, senha], (err, user) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!user) return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
+        // Simples: retorna sucesso e salva no front (ideal: usar JWT)
+        res.json({ success: true, nome: user.nome, tipo_conta: user.tipo_conta });
+    });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

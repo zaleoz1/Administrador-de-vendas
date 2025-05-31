@@ -624,34 +624,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('form-cadastro-usuario').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    const formCadastroUsuario = document.getElementById('form-cadastro-usuario');
+    if (formCadastroUsuario) {
+        formCadastroUsuario.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-        const nome = document.getElementById('nome').value;
-        const cpf = document.getElementById('cpf').value;
-        const tipo_conta = document.getElementById('tipo-conta').value;
-        const senha = document.getElementById('senha').value;
-        const confirmarSenha = document.getElementById('confirmar-senha').value;
+            const nome = document.getElementById('nome').value;
+            const cpf = document.getElementById('cpf').value.replace(/\D/g, ''); // <-- Adicione isso!
+            const tipo_conta = document.getElementById('tipo-conta').value;
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmar-senha').value;
 
-        if (senha !== confirmarSenha) {
-            alert('As senhas não coincidem!');
-            return;
-        }
+            if (senha !== confirmarSenha) {
+                alert('As senhas não coincidem!');
+                return;
+            }
 
-        const res = await fetch('http://localhost:3001/api/usuarios', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, cpf, tipo_conta, senha })
+            const res = await fetch('http://localhost:3001/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, cpf, tipo_conta, senha })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('Usuário cadastrado com sucesso!');
+                document.getElementById('form-cadastro-usuario').reset();
+            } else {
+                alert(data.error || 'Erro ao cadastrar usuário.');
+            }
         });
-
-        const data = await res.json();
-        if (res.ok) {
-            alert('Usuário cadastrado com sucesso!');
-            document.getElementById('form-cadastro-usuario').reset();
-        } else {
-            alert(data.error || 'Erro ao cadastrar usuário.');
-        }
-    });
+    }
 
     document.getElementById('toggleSenha').addEventListener('click', function() {
         const input = document.getElementById('senha');
@@ -766,5 +769,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Exibe o nome do usuário logado no header
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+    console.log('Usuário logado:', usuario);
+    if (usuario && usuario.nome) {
+        const spanNome = document.querySelector('#nome-usuario-logado span');
+        if (spanNome) spanNome.textContent = usuario.nome;
+    }
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const imgUsuario = document.getElementById('img-usuario-logado');
+    const modal = document.getElementById('modal-usuario-logado');
+    const fechar = document.getElementById('fechar-modal-usuario-logado');
+    const info = document.getElementById('info-usuario-logado');
+    const btnLogout = document.getElementById('btn-logout');
+
+    if (imgUsuario && modal && fechar && info && btnLogout) {
+        imgUsuario.addEventListener('click', () => {
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+            info.innerHTML = `
+                <div><strong>Nome:</strong> ${usuario.nome || '-'}</div>
+                <div><strong>CPF:</strong> ${usuario.cpf || '-'}</div>
+                <div><strong>Tipo de conta:</strong> ${usuario.tipo_conta || '-'}</div>
+            `;
+            modal.classList.remove('hidden');
+        });
+        fechar.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'login.html';
+        });
+    }
+});
+
 

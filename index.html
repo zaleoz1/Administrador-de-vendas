@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="styles/output.css">
     <script src="Frontend/script1.js" defer></script>
+     <script src="Frontend/auth.js" defer></script>
 </head>
 <body class="bg-gradient-to-br from-cor-primaria/10 to-cor-quaternaria/10 min-h-screen w-full font-['Roboto']">
     <!-- Header responsivo -->
@@ -35,7 +36,7 @@
                 <a href="cadastro.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Cadastro</a>
             </nav>
             <div class="flex flex-row items-center gap-2 ml-auto">
-                <img src="img/1.png" alt="Logo" class="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-cor-primaria/30 shadow-md transition hover:scale-105">
+                <img src="img/1.png" id="img-usuario-logado" alt="Logo" class="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-cor-primaria/30 shadow-md transition hover:scale-105">
             </div>
         </div>
     </header>
@@ -124,5 +125,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal do usuário logado -->
+<div id="modal-usuario-logado" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 max-w-xs w-full text-center relative">
+        <button id="fechar-modal-usuario-logado" class="absolute top-2 right-2 text-gray-400 text-2xl font-bold rounded-full w-6 h-6 flex items-center justify-center focus:outline-none hover:bg-gray-200 transition" aria-label="Fechar modal" type="button">&times;</button>
+        <h2 class="text-lg font-bold mb-2 text-cor-primaria">Usuário</h2>
+        <div id="info-usuario-logado" class="mb-4 text-gray-700"></div>
+        <button id="btn-logout" class="mt-2 w-full bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition h-10 px-2 py-2 text-base ">Sair</button>
+    </div>
+</div>
 </body>
 </html>
