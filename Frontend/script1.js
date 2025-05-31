@@ -426,12 +426,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             ul.innerHTML += `
-                <li class="flex justify-between items-center py-2">
-                    <span>${dataInicio} - ${dataFim}</span>
-                    <span class="font-bold text-green-600">${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <button class="text-blue-500 underline bg-transparent focus:outline-none" 
-                        data-inicio="${fechamento.data_inicio}" 
-                        data-fim="${fechamento.data_fim}">Ver detalhes</button>
+                <li class="py-2">
+                    <div class="grid grid-cols-3 items-center">
+                        <span class="text-left">${dataInicio} - ${dataFim}</span>
+                        <span class="font-bold text-green-600 text-center">${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        <button class="text-blue-500 underline bg-transparent focus:outline-none text-right"
+                            data-inicio="${fechamento.data_inicio}" 
+                            data-fim="${fechamento.data_fim}">Ver detalhes</button>
+                    </div>
                 </li>
             `;
         }
