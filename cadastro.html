@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Controle de Vendas</title>
+    <title>Kontrolla</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="styles/output.css">
     <script src="Frontend/script1.js" defer></script>
      <script src="Frontend/auth.js" defer></script>
+      <link rel="shortcut icon" href="img/logo.ico" type="image/x-icon">
 </head>
 <body class="bg-gradient-to-br from-cor-primaria/10 to-cor-quaternaria/10 min-h-screen w-full font-['Roboto'] flex flex-col">
     <!-- Header responsivo -->
@@ -21,18 +22,18 @@
                     </svg>
                 </button>
                 <div id="mobile-menu" class="sm:hidden absolute left-0 top-10 z-50 bg-white rounded-xl shadow-xl p-3 flex flex-col gap-3 w-48 hidden">
+                    <a href="index.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
                     <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Histórico</a>
                     <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Ajuste</a>
-                    <a href="index.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
                     <a href="cadastro.html" class="text-cor-primaria px-4 py-2 rounded font-bold text-base transition hover:bg-cor-primaria/10">Cadastro</a>
                 </div>
             </div>
             <img src="img/logo-azul.png" alt="Logo Azul"
                 class="h-10 sm:h-12 absolute left-1/2 -translate-x-1/2 sm:static sm:left-auto sm:translate-x-0 mx-auto sm:mx-0">
             <nav class="hidden sm:flex gap-4 justify-center flex-1">
+                <a href="index.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
                 <a href="historic.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Histórico</a>
                 <a href="ajuste.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Ajuste</a>
-                <a href="index.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Início</a>
                 <a href="cadastro.html" class="text-cor-primaria px-4 py-2 rounded-lg font-bold text-base transition hover:bg-cor-primaria/10">Cadastro</a>
             </nav>
             <div class="flex flex-row items-center gap-2 ml-auto">
@@ -92,15 +93,17 @@
                         </button>
                     </div>
                 </div>
-                <button type="submit"
-                    class="bg-cor-primaria text-white rounded-lg font-bold hover:bg-cor-secundaria transition w-full h-10 px-2 py-2 text-basemt-2">
-                    Cadastrar
-                </button>
+                <div class="flex gap-4 mt-2">
+                    <button type="submit"
+                        class="bg-cor-primaria text-white rounded-lg font-bold hover:bg-cor-secundaria transition h-10 px-2 py-2 text-base w-1/2">
+                        Cadastrar
+                    </button>
+                    <button type="button" id="btn-ver-usuarios"
+                        class="bg-cor-primaria text-white rounded-lg font-bold hover:bg-cor-secundaria transition h-10 px-2 py-2 text-base w-1/2">
+                        Usuários Cadastrados
+                    </button>
+                </div>
             </form>
-            <button type="button" id="btn-ver-usuarios"
-                class="mb-4 mt-4 bg-cor-primaria text-white rounded-lg font-bold hover:bg-cor-secundaria transition w-full h-10 px-2 py-2 text-base">
-                Ver Usuários Cadastrados
-            </button>
 
             <!-- Modal de Usuários -->
             <div id="modal-usuarios" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">

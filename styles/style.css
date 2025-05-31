@@ -54,10 +54,7 @@ a.bg-blue-500 {
   
 }
 
-button:hover,
-a.bg-blue-500:hover {
-  background: var(--cor-secundaria);
-}
+
 
 a.bg-gray-100,
 .bg-gray-100 {
