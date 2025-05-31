@@ -80,6 +80,10 @@
                     <label class="block text-xs font-bold mb-1 invisible">Salvar</label>
                     <button type="submit" class="bg-cor-primaria text-white rounded-lg font-bold hover:bg-cor-secundaria transition w-full h-10 px-2 py-2 text-base shadow">Salvar</button>
                 </div>
+                <div class="flex flex-col w-full sm:w-40">
+                    <label class="block text-xs font-bold invisible">Cancelar</label>
+                    <button type="button" id="btn-cancelar-venda" class="bg-gray-200 text-cor-primaria rounded-lg font-bold hover:bg-gray-300 transition w-full h-10 px-2 py-2 text-base shadow ">Cancelar</button>
+                </div>
             </form>
         </section>
         <!-- Fim Formulário de venda/retirada -->
@@ -88,9 +92,11 @@
         <section class="bg-white/90 rounded-2xl border border-cor-primaria/10 shadow-inner p-4 mb-4">
             <div class="flex items-center justify-between mb-2 sticky top-0  z-10 px-6" style="padding-top: 4px;">
                 <h2 class="text-base font-bold text-cor-primaria">Últimos registros do dia</h2>
-                <button id="btn-caixa1" class="px-4 py-2 rounded-lg font-bold transition text-white text-base bg-gradient-to-r from-cor-primaria to-cor-secundaria shadow hover:from-cor-secundaria hover:to-cor-terciaria">
-                    Fechar caixa
-                </button>
+                <button id="btn-caixa1"
+    class="px-2 py-1 text-sm rounded-lg font-bold transition text-white bg-gradient-to-r from-cor-primaria to-cor-secundaria  hover:from-cor-secundaria hover:to-cor-terciaria
+           sm:px-4 sm:py-2 sm:text-base">
+    Fechar caixa
+</button>
             </div>
             <ul id="lista-vendas-dia" class="divide-y h-80 overflow-y-auto px-6 py-6">
                 <!-- Itens serão inseridos via JS -->

@@ -615,5 +615,13 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', ajustarFiltroAjusteVisibilidade);
         ajustarFiltroAjusteVisibilidade();
     }
+
+    const btnCancelarVenda = document.getElementById('btn-cancelar-venda');
+    if (btnCancelarVenda && formVenda && btnAdicionar) {
+        btnCancelarVenda.addEventListener('click', function () {
+            formVenda.classList.add('hidden');
+            btnAdicionar.classList.remove('hidden');
+        });
+    }
 });
 
