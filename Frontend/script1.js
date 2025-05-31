@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Abrir modal de ajuste ao clicar no botão "Ajustar"
     const btnModalFinalizarAjuste = document.getElementById('modal-finalizar-ajuste');
     const modalCaixaFecharAjuste = document.getElementById('modal-caixa-fechar-ajuste');
-    const btnCancelarFinalizarAjuste = document.getElementById('btn-cancelar-finalizar ajuste');
+    const btnCancelarFinalizarAjuste = document.getElementById('btn-cancelar-finalizar-ajuste'); // Corrigido aqui!
 
     if (btnModalFinalizarAjuste && modalCaixaFecharAjuste) {
         btnModalFinalizarAjuste.addEventListener('click', () => {
@@ -592,6 +592,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const observer = new MutationObserver(atualizarLucroVendedor);
     if (subtotalSpan) {
         observer.observe(subtotalSpan, { childList: true });
+    }
+
+    // Mostrar/ocultar filtro no mobile
+    const btnFiltroMobile = document.getElementById('btn-filtro-mobile');
+    const containerFiltroAjuste = document.getElementById('container-filtro-ajuste');
+
+    function ajustarFiltroAjusteVisibilidade() {
+        if (window.innerWidth >= 640) { // sm: breakpoint Tailwind
+            containerFiltroAjuste.classList.remove('hidden');
+        } else {
+            containerFiltroAjuste.classList.add('hidden');
+        }
+    }
+
+    if (btnFiltroMobile && containerFiltroAjuste) {
+        btnFiltroMobile.addEventListener('click', () => {
+            containerFiltroAjuste.classList.toggle('hidden');
+        });
+        window.addEventListener('resize', ajustarFiltroAjusteVisibilidade);
+        ajustarFiltroAjusteVisibilidade();
     }
 });
 
