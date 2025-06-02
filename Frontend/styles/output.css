@@ -3106,10 +3106,6 @@ header,
   background-color: var(--cor-terciaria) !important;
 }
 
-.border-blue-500 {
-  border-color: var(--cor-primaria) !important;
-}
-
 .shadow {
   box-shadow: 0 2px 8px 0 var(--cor-quaternaria, #05354a22);
 }

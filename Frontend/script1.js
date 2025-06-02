@@ -19,6 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return hoje.toISOString().slice(0, 10);
     }
 
+    function formatarDataBR(data) {
+        if (!data) return '';
+        // Aceita tanto '2025-06-02' quanto '2025-06-02T03:00:00.000Z'
+        const soData = data.slice(0, 10);
+        const [ano, mes, dia] = soData.split('-');
+        return `${dia}/${mes}/${ano}`;
+    }
+
     function carregarVendas() {
         if (!lista) return;
         fetch(`http://localhost:3001/api/vendas?data=${dataHoje()}`)
@@ -30,16 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     lista.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-vendas">Nenhum registro hoje.</li>';
                 } else {
                     vendas.forEach(venda => {
+                        const valor = parseFloat(venda.valor);
                         const sinal = venda.tipo === 'retirada' ? '-' : '+';
                         const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
                         lista.innerHTML += `
-    <li class="flex justify-between items-center py-2">
-        <span class="flex-1 text-left">${venda.item}</span>
-        <span class="flex-1 text-center text-xs text-gray-500">${venda.forma_pagamento ? venda.forma_pagamento : ''}</span>
-        <span class="flex-1 text-right font-bold ${cor}">${sinal} ${formatarValor(venda.valor)}</span>
-    </li>
+<li class="flex justify-between items-center py-2">
+    <span class="flex-1 text-left">${venda.item}</span>
+    <span class="flex-1 text-center text-xs text-gray-500">${venda.forma_pagamento ? venda.forma_pagamento : ''}</span>
+    <span class="flex-1 text-right font-bold ${cor}">${sinal} ${formatarValor(valor)}</span>
+</li>
 `;
-                        total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+                        total += venda.tipo === 'retirada' ? -valor : valor; 
                     });
                 }
                 totalDia.textContent = formatarValor(total);
@@ -60,22 +69,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const ul = document.getElementById('historico-diario');
         if (!ul) return;
         ul.innerHTML = '';
-        const fechamentos = await fetch('http://localhost:3001/api/fechamentos').then(r => r.json());
+        const fechamentos = await fetch('http://localhost:3001/api/historico-diario').then(r => r.json());
         fechamentos.forEach((fechamento, idx) => {
-            const dataFormatada = fechamento.data.split('-').reverse().join('/');
+            const dataFormatada = formatarDataBR(fechamento.data);
             ul.innerHTML += `
-                <li class="flex justify-between items-center py-2">
-                    <span>${dataFormatada}</span>
-                    <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <button class="text-blue-500 underline bg-transparent focus:outline-none" data-data="${fechamento.data}">Ver detalhes</button>
-                </li>
-            `;
+            <li class="flex justify-between items-center py-2">
+                <span>${dataFormatada}</span>
+                <span class="font-bold text-blue-500">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                <button class="text-blue-500 underline bg-transparent focus:outline-none" data-data="${fechamento.data}">Ver detalhes</button>
+            </li>
+        `;
         });
 
         // Eventos dos botões "Ver detalhes"
         ul.querySelectorAll('button[data-data]').forEach(btn => {
             btn.addEventListener('click', async () => {
-                const data = btn.getAttribute('data-data');
+                const data = btn.getAttribute('data-data').slice(0, 10); // Pega só YYYY-MM-DD
                 const vendas = await buscarVendasHistoricoPorData(data);
                 mostrarDetalhesHistorico(data, vendas);
             });
@@ -83,20 +92,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function mostrarDetalhesHistorico(data, vendas) {
-        let html = `<h3 class="text-lg font-bold mb-2">Detalhes do dia ${data.split('-').reverse().join('/')}</h3>`;
+        const dataFormatada = formatarDataBR(data);
+        let html = `<h3 class="text-lg font-bold mb-2">Detalhes do dia ${dataFormatada}</h3>`;
         html += `<ul class="divide-y mb-4">`;
         let total = 0;
         vendas.forEach(venda => {
             const sinal = venda.tipo === 'retirada' ? '-' : '+';
             const cor = venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600';
             html += `
-                <li class="flex justify-between items-center py-2">
-                    <span>${venda.item}</span>
-                    <span class="font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                    <span class="text-xs text-gray-500 ml-2">${venda.forma_pagamento || ''}</span>
-                </li>
-            `;
-            total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+            <li class="flex justify-between items-center py-2">
+                <span>${venda.item}</span>
+                <span class="font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                <span class="text-xs text-gray-500 ml-2">${venda.forma_pagamento || ''}</span>
+            </li>
+        `;
+            total += venda.tipo === 'retirada' ? -parseFloat(venda.valor) : parseFloat(venda.valor);
         });
         html += `</ul>`;
         html += `
@@ -152,7 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             let total = 0;
             vendas.forEach(venda => {
-                total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+                const valor = parseFloat(venda.valor); // CORREÇÃO
+                total += venda.tipo === 'retirada' ? -valor : valor;
             });
             const resp = await fetch('http://localhost:3001/api/fechamentos', {
                 method: 'POST',
@@ -179,6 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (totalDia) {
                 totalDia.textContent = 'R$ 0,00';
+            }
+
+            // FECHA O MODAL APÓS CONFIRMAR
+            const modalCaixaFechar = document.getElementById('modal-caixa-fechar');
+            if (modalCaixaFechar) {
+                modalCaixaFechar.classList.add('hidden');
             }
         });
     }
@@ -220,12 +237,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // Busca fechamentos apenas para a data selecionada
             const fechamentos = await fetch('http://localhost:3001/api/fechamentos').then(r => r.json());
-            const fechamento = fechamentos.find(f => f.data === data);
+            const fechamento = fechamentos.find(f => f.data && f.data.slice(0, 10) === data);
             if (!fechamento) {
                 ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico">Nenhum registro encontrado.</li>';
                 return;
             }
-            const dataFormatada = fechamento.data.split('-').reverse().join('/');
+            const dataFormatada = formatarDataBR(fechamento.data);
             ul.innerHTML = `
                 <li class="flex justify-between items-center py-2">
                     <span>${dataFormatada}</span>
@@ -236,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ul.querySelectorAll('button[data-data]').forEach(btn => {
                 btn.addEventListener('click', async () => {
-                    const data = btn.getAttribute('data-data');
+                    const data = btn.getAttribute('data-data').slice(0, 10); // Pega só YYYY-MM-DD
                     const vendas = await buscarVendasHistoricoPorData(data);
                     mostrarDetalhesHistorico(data, vendas);
                 });
@@ -297,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             vendas = vendas.filter(v => v.tipo === filtros.tipo);
         }
         if (filtros.data) {
-            vendas = vendas.filter(v => v.data === filtros.data);
+            vendas = vendas.filter(v => v.data && v.data.slice(0, 10) === filtros.data);
         }
         if (filtros.forma_pagamento) {
             vendas = vendas.filter(v => v.forma_pagamento === filtros.forma_pagamento);
@@ -315,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="px-2 py-3 text-center text-sm">${venda.tipo}</td>
                     <td class="px-2 py-3 text-center text-sm">${venda.forma_pagamento || ''}</td>
                     <td class="px-2 py-3 text-center text-sm font-bold ${cor}">${sinal} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td class="px-2 py-3 text-center text-sm">${venda.data.split('-').reverse().join('/')}</td>
+                    <td class="px-2 py-3 text-center text-sm">${formatarDataBR(venda.data)}</td>
                 </tr>
             `;
             if (venda.tipo === 'retirada') {
@@ -363,13 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         vendas.sort((a, b) => a.data.localeCompare(b.data));
-        const dataInicio = vendas[0].data;
-        const dataFim = vendas[vendas.length - 1].data;
+        // Ajusta datas para o formato YYYY-MM-DD
+        const dataInicio = vendas[0].data.slice(0, 10);
+        const dataFim = vendas[vendas.length - 1].data.slice(0, 10);
 
         let total = 0;
         vendas.forEach(venda => {
-            total += venda.tipo === 'retirada' ? -venda.valor : venda.valor;
+            total += venda.tipo === 'retirada' ? -parseFloat(venda.valor) : parseFloat(venda.valor);
         });
+
+        // Garante que total é número com 2 casas decimais
+        total = Number(total.toFixed(2));
 
         const resp = await fetch('http://localhost:3001/api/fechamento-semanal', {
             method: 'POST',
@@ -383,6 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (resp.ok) {       
             alert('Ajuste semanal salvo no histórico!');
+            if (document.getElementById('modal-caixa-fechar-ajuste')) {
+                document.getElementById('modal-caixa-fechar-ajuste').classList.add('hidden');
+            }
             carregarTabelaAjuste();
 
             // Remove todos os fechamentos do banco
@@ -407,29 +431,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const ul = document.getElementById('historico-semanal');
         if (!ul) return;
         ul.innerHTML = '';
-        const semanais = await fetch('http://localhost:3001/api/fechamento-semanal').then(r => r.json());
+        const semanais = await fetch('http://localhost:3001/api/fechamento-semanal').then (r => r.json());
         if (!semanais.length) {
             ul.innerHTML = '<li class="text-gray-400 text-center py-2" id="sem-historico-semanal">Nenhum fechamento semanal encontrado.</li>';
             return;
         }
         for (const fechamento of semanais) {
-            const dataInicio = fechamento.data_inicio.split('-').reverse().join('/');
-            const dataFim = fechamento.data_fim.split('-').reverse().join('/');
+            const dataInicioBR = formatarDataBR(fechamento.data_inicio);
+            const dataFimBR = formatarDataBR(fechamento.data_fim);
 
-            // Busca as vendas fechadas desse período para calcular o subtotal
-            let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${fechamento.data_inicio}&dataFim=${fechamento.data_fim}`).then(r => r.json());
-            let subtotal = 0;
-            vendas.forEach(venda => {
-                if (venda.tipo !== 'retirada') {
-                    subtotal += parseFloat(venda.valor);
-                }
-            });
-
+            // NÃO precisa calcular subtotal/retirado/total aqui!
             ul.innerHTML += `
                 <li class="py-2">
                     <div class="grid grid-cols-3 items-center">
-                        <span class="text-left">${dataInicio} - ${dataFim}</span>
-                        <span class="font-bold text-green-600 text-center">${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        <span class="text-left">${dataInicioBR} - ${dataFimBR}</span>
+                        <span class="font-bold text-green-600 text-center">${Number(fechamento.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                         <button class="text-blue-500 underline bg-transparent focus:outline-none text-right"
                             data-inicio="${fechamento.data_inicio}" 
                             data-fim="${fechamento.data_fim}">Ver detalhes</button>
@@ -443,7 +459,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', async () => {
                 const dataInicio = btn.getAttribute('data-inicio');
                 const dataFim = btn.getAttribute('data-fim');
-                let vendas = await fetch(`http://localhost:3001/api/vendas-fechadas?dataInicio=${dataInicio}&dataFim=${dataFim}`).then(r => r.json());
+                let vendas = await fetch(
+                    `http://localhost:3001/api/vendas-fechadas?dataInicio=${dataInicio.slice(0,10)}&dataFim=${dataFim.slice(0,10)}`
+                ).then(r => r.json());
 
                 // Calcula subtotal, retirado e total
                 let subtotal = 0;
@@ -462,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const conteudo = document.getElementById('detalhes-historico-conteudo');
                 if (conteudo && modal) {
                     conteudo.innerHTML = `
-                        <h3 class="text-lg font-bold mb-2">Detalhes da semana<br>${dataInicio.split('-').reverse().join('/')} até ${dataFim.split('-').reverse().join('/')}</h3>
+                        <h3 class="text-lg font-bold mb-2">Detalhes da semana<br>${formatarDataBR(dataInicio)} até ${formatarDataBR(dataFim)}</h3>
                         <ul class="divide-y mb-4 max-h-60 overflow-y-auto">
                             ${vendas.map(venda => `
                                 <li class="flex justify-between items-center py-2">
@@ -470,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="font-bold ${venda.tipo === 'retirada' ? 'text-red-500' : 'text-green-600'}">
                                         ${venda.tipo === 'retirada' ? '-' : '+'} ${parseFloat(venda.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </span>
-                                    <span class="text-gray-500 text-xs ml-2">${venda.data.split('-').reverse().join('/')}</span>
+                                    <span class="text-gray-500 text-xs ml-2">${formatarDataBR(venda.data)}</span>
                                 </li>
                             `).join('')}
                         </ul>
@@ -656,26 +674,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('toggleSenha').addEventListener('click', function() {
-        const input = document.getElementById('senha');
-        if (input.type === 'password') {
-            input.type = 'text';
-            this.textContent = '🙈';
-        } else {
-            input.type = 'password';
-            this.textContent = '👁️';
-        }
-    });
-    document.getElementById('toggleConfirmarSenha').addEventListener('click', function() {
-        const input = document.getElementById('confirmar-senha');
-        if (input.type === 'password') {
-            input.type = 'text';
-            this.textContent = '🙈';
-        } else {
-            input.type = 'password';
-            this.textContent = '👁️';
-        }
-    });
+    const toggleSenha = document.getElementById('toggleSenha');
+    if (toggleSenha) {
+        toggleSenha.addEventListener('click', function() {
+            const input = document.getElementById('senha');
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                this.textContent = '👁️';
+            }
+        });
+    }
+    // Checagem para toggleConfirmarSenha
+    const toggleConfirmarSenha = document.getElementById('toggleConfirmarSenha');
+    if (toggleConfirmarSenha) {
+        toggleConfirmarSenha.addEventListener('click', function() {
+            const input = document.getElementById('confirmar-senha');
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                this.textContent = '👁️';
+            }
+        });
+    }
 
     // MODAL DE USUÁRIOS
     const btnVerUsuarios = document.getElementById('btn-ver-usuarios');
@@ -834,6 +859,30 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnAjuste) {
             btnAjuste.style.display = 'none';
         }
+    }
+});
+
+// Fecha o teclado do celular ao clicar fora de campos de input/textarea/select
+document.addEventListener('touchstart', function(e) {
+    const ativo = document.activeElement;
+    if (
+        ativo &&
+        (ativo.tagName === 'INPUT' || ativo.tagName === 'TEXTAREA' || ativo.tagName === 'SELECT') &&
+        !e.target.closest('input, textarea, select')
+    ) {
+        ativo.blur();
+    }
+});
+
+// Também funciona para clique com mouse (opcional)
+document.addEventListener('mousedown', function(e) {
+    const ativo = document.activeElement;
+    if (
+        ativo &&
+        (ativo.tagName === 'INPUT' || ativo.tagName === 'TEXTAREA' || ativo.tagName === 'SELECT') &&
+        !e.target.closest('input, textarea, select')
+    ) {
+        ativo.blur();
     }
 });
 

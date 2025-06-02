@@ -1,116 +1,123 @@
-const db = require('./DataBase');
-function inserirVenda(item, valor, tipo, data, forma_pagamento, callback) {
-  db.run(
-    'INSERT INTO vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)',
-    [item, valor, tipo, data, forma_pagamento],
-    function (err) {
-      callback(err, this?.lastID);
-    }
-  );
+const db = require('./MySQL');
+
+// Inserir venda
+async function inserirVenda(item, valor, tipo, data, forma_pagamento, callback) {
+  try {
+    const [result] = await db.execute(
+      'INSERT INTO vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)',
+      [item, valor, tipo, data, forma_pagamento]
+    );
+    callback(null, result.insertId);
+  } catch (err) {
+    callback(err);
+  }
 }
 
-function listarVendasPorData(data, callback) {
-  db.all(
-    'SELECT * FROM vendas WHERE data = ?',
-    [data],
-    (err, rows) => {
-      callback(err, rows);
-    }
-  );
+// Listar vendas por data
+async function listarVendasPorData(data, callback) {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM vendas WHERE data = ?',
+      [data]
+    );
+    callback(null, rows);
+  } catch (err) {
+    callback(err);
+  }
 }
 
 // Inserir fechamento diário
-function inserirFechamento(data, total, callback) {
-  db.run(
-    `INSERT INTO fechamentos (data, total) VALUES (?, ?)`,
-    [data, total],
-    function (err) {
-      callback(err, this?.lastID);
-    }
-  );
+async function inserirFechamento(data, total, callback) {
+  try {
+    const [result] = await db.execute(
+      'INSERT INTO fechamentos (data, total) VALUES (?, ?)',
+      [data, total]
+    );
+    callback(null, result.insertId);
+  } catch (err) {
+    callback(err);
+  }
 }
 
 // Listar fechamentos
-function listarFechamentos(callback) {
-  db.all(
-    'SELECT * FROM fechamentos ORDER BY data DESC',
-    [],
-    (err, rows) => {
-      callback(err, rows);
-    }
-  );
+async function listarFechamentos(callback) {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM fechamentos ORDER BY data DESC'
+    );
+    callback(null, rows);
+  } catch (err) {
+    callback(err);
+  }
 }
 
-function copiarVendasParaHistorico(data, callback) {
-  const db = require('./DataBase');
-  db.all(
-    `SELECT v.* FROM vendas v
-         LEFT JOIN historico_vendas h
-         ON v.item = h.item AND v.valor = h.valor AND v.tipo = h.tipo AND v.data = h.data
-         WHERE v.data = ? AND h.rowid IS NULL`,
-    [data],
-    (err, vendasNovas) => {
-      if (err) return callback(err);
-      if (!vendasNovas.length) return callback(null, 0);
-      const insert = db.prepare(
-        'INSERT INTO historico_vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)'
+// Copiar vendas para histórico
+async function copiarVendasParaHistorico(data, callback) {
+  try {
+    const [vendas] = await db.execute('SELECT * FROM vendas WHERE data = ?', [data]);
+    for (const v of vendas) {
+      // Converte para string se for Date, e pega só a data (YYYY-MM-DD)
+      const dataVenda = typeof v.data === 'string' ? v.data.slice(0, 10) : v.data.toISOString().slice(0, 10);
+      await db.execute(
+        'INSERT INTO historico_vendas (item, valor, tipo, data, forma_pagamento) VALUES (?, ?, ?, ?, ?)',
+        [v.item, v.valor, v.tipo, dataVenda, v.forma_pagamento]
       );
-      vendasNovas.forEach((venda) => {
-        insert.run([venda.item, venda.valor, venda.tipo, venda.data, venda.forma_pagamento]);
-      });
-      insert.finalize((err) => callback(err, vendasNovas.length));
     }
-  );
+    callback(null);
+  } catch (err) {
+    callback(err);
+  }
 }
 
-function inserirFechamentoSemanal(dataInicio, dataFim, total, callback) {
-  db.get(
-    'SELECT * FROM historico_semanal WHERE data_inicio = ? AND data_fim = ?',
-    [dataInicio, dataFim],
-    function (err, row) {
-      if (err) return callback(err);
-      if (row) {
-        // Já existe: atualize somando o total
-        const novoTotal = row.total + total;
-        db.run(
-          'UPDATE historico_semanal SET total = ? WHERE data_inicio = ? AND data_fim = ?',
-          [novoTotal, dataInicio, dataFim],
-          function (err) {
-            callback(err, row.id);
-          }
-        );
-      } else {
-        // Não existe: insira normalmente
-        db.run(
-          'INSERT INTO historico_semanal (data_inicio, data_fim, total) VALUES (?, ?, ?)',
-          [dataInicio, dataFim, total],
-          function (err) {
-            callback(err, this?.lastID);
-          }
-        );
-      }
+// Inserir fechamento semanal
+async function inserirFechamentoSemanal(dataInicio, dataFim, total, callback) {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM historico_semanal WHERE data_inicio = ? AND data_fim = ?',
+      [dataInicio, dataFim]
+    );
+    if (rows.length) {
+      const novoTotal = Number(rows[0].total) + Number(total);
+      await db.execute(
+        'UPDATE historico_semanal SET total = ? WHERE data_inicio = ? AND data_fim = ?',
+        [novoTotal, dataInicio, dataFim]
+      );
+      callback(null, rows[0].id);
+    } else {
+      const [result] = await db.execute(
+        'INSERT INTO historico_semanal (data_inicio, data_fim, total) VALUES (?, ?, ?)',
+        [dataInicio, dataFim, total]
+      );
+      callback(null, result.insertId);
     }
-  );
+  } catch (err) {
+    callback(err);
+  }
 }
 
-function listarFechamentosSemanais(callback) {
-  db.all(
-    'SELECT * FROM historico_semanal ORDER BY data_inicio DESC',
-    [],
-    (err, rows) => {
-      callback(err, rows);
-    }
-  );
+// Listar fechamentos semanais
+async function listarFechamentosSemanais(callback) {
+  try {
+    const [rows] = await db.execute(
+      'SELECT * FROM historico_semanal ORDER BY data_inicio DESC'
+    );
+    callback(null, rows);
+  } catch (err) {
+    callback(err);
+  }
 }
 
-function inserirUsuario(nome, cpf, tipo_conta, senha, callback) {
-  db.run(
-    'INSERT INTO usuarios (nome, cpf, tipo_conta, senha) VALUES (?, ?, ?, ?)',
-    [nome, cpf, tipo_conta, senha],
-    function (err) {
-      callback(err, this?.lastID);
-    }
-  );
+// Inserir usuário
+async function inserirUsuario(nome, cpf, tipo_conta, senha, callback) {
+  try {
+    const [result] = await db.execute(
+      'INSERT INTO usuarios (nome, cpf, tipo_conta, senha) VALUES (?, ?, ?, ?)',
+      [nome, cpf, tipo_conta, senha]
+    );
+    callback(null, result.insertId);
+  } catch (err) {
+    callback(err);
+  }
 }
 
 module.exports = {
